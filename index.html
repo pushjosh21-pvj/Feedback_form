@@ -270,6 +270,15 @@
 <div class="wrap" id="app"></div>
 
 <script>
+/* ================== CONFIG — EDIT THESE TWO LINES ==================
+   API_URL     : paste the Apps Script "Web app" URL after you deploy it.
+                 It looks like https://script.google.com/macros/s/AKfy..../exec
+   The results access code is NOT stored here on purpose — it only lives
+   inside Code.gs, so it never appears in the published page source.
+   =================================================================== */
+const API_URL = "https://script.google.com/macros/s/AKfycbx9Y_zlmwt6jwu9tdFpxIMtAtYyJOJtf7K3ibZWddIAmHsHuLS81nYy29w0ymrxZszP/exec";
+let enteredCode = "";
+
 const REGIONS = ["North","Central","East","West","South KAT","South TK"];
 const DESIGNATIONS = ["Technician","Senior Technician","Diagnostic Technician","Service Advisor","Team Leader / Workshop Supervisor","Works Manager","Other"];
 const QUALIFICATIONS = ["Below 10th","10th","12th / ITI","Diploma","Graduation","Post Graduation"];
@@ -476,6 +485,7 @@ function renderCard(){
 
   const next = document.createElement("button");
   next.className = "btn";
+  next.id = "nextBtn";
   next.textContent = state.step === STEPS.length-1 ? "Submit feedback" : "Next";
   next.onclick = () => {
     if(!stepValid(step)){
@@ -585,16 +595,21 @@ function renderThanks(){
 
 async function submitResponse(){
   const record = { ts: Date.now(), ...state.answers };
+  const btn = document.getElementById("nextBtn");
+  if(btn){ btn.disabled = true; btn.textContent = "Saving\u2026"; }
   try{
-    const key = "responses:" + Date.now() + "-" + Math.random().toString(36).slice(2,8);
-    const res = await window.storage.set(key, JSON.stringify(record), true);
-    if(!res){
-      document.getElementById("errBox").textContent = "Could not save your response. Please try again.";
-      return;
-    }
+    // text/plain avoids a CORS preflight, which Apps Script cannot answer
+    const res = await fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify(record)
+    });
+    const out = await res.json();
+    if(!out || out.ok !== true) throw new Error(out && out.error || "save failed");
     state.view = "thanks";
     render();
   } catch(err){
+    if(btn){ btn.disabled = false; btn.textContent = "Submit feedback"; }
     document.getElementById("errBox").textContent = "Could not save your response. Please check your connection and try again.";
   }
 }
@@ -619,12 +634,22 @@ function renderResults(){
     btn.textContent = "View results";
     const err = document.createElement("div");
     err.className = "err";
-    btn.onclick = ()=>{
-      if(input.value === "PBK2026"){
-        resultsUnlocked = true;
-        render();
-      } else {
-        err.textContent = "Incorrect code.";
+    btn.onclick = async ()=>{
+      btn.disabled = true; err.textContent = "Checking\u2026";
+      try{
+        const res = await fetch(API_URL + "?code=" + encodeURIComponent(input.value));
+        const out = await res.json();
+        if(out && out.ok === true){
+          enteredCode = input.value;
+          resultsUnlocked = true;
+          render();
+        } else {
+          btn.disabled = false;
+          err.textContent = "Incorrect code.";
+        }
+      }catch(e){
+        btn.disabled = false;
+        err.textContent = "Could not reach the server. Check the API_URL setting.";
       }
     };
     card.appendChild(input);
@@ -656,14 +681,10 @@ function renderHeaderResults(){
 async function loadAndRenderResults(wrap, loadingEl){
   let records = [];
   try{
-    const listRes = await window.storage.list("responses:", true);
-    const keys = (listRes && listRes.keys) || [];
-    for(const k of keys){
-      try{
-        const r = await window.storage.get(k, true);
-        if(r && r.value) records.push(JSON.parse(r.value));
-      }catch(e){ /* skip unreadable key */ }
-    }
+    const res = await fetch(API_URL + "?code=" + encodeURIComponent(enteredCode));
+    const out = await res.json();
+    if(!out || out.ok !== true) throw new Error("load failed");
+    records = out.records || [];
   }catch(e){
     loadingEl.textContent = "Could not load results right now.";
     return;
