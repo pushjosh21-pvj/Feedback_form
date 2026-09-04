@@ -281,6 +281,585 @@ let enteredCode = "";
 
 const REGIONS = ["North","Central","East","West","South KAT","South TK"];
 const DESIGNATIONS = ["Technician","Senior Technician","Diagnostic Technician","Service Advisor","Team Leader / Workshop Supervisor","Works Manager","Other"];
+const DEALER_MAPPING = {
+  "Central": {
+    "Anurag Anand": [
+      "12291-SURAJ AUTOMOBILE",
+      "12387-SHREE BAJAJ",
+      "12892-GOLU AUTOMOBILES",
+      "12980-VAISHALI ELECTRO INDIA",
+      "13092-DIPAK AUTOMOBILE",
+      "14253-RAM BHAWAN RAM AUTOMOBILES",
+      "12365-TIRHUT AUTOMOBILES",
+      "12425-AKARSH AUTO PVT LTD",
+      "12456-SADHANA AUTO AGENCIES PVT LTD",
+      "12923-RAJENDRA AUTOMOBILES",
+      "12977-SHAIL KAMAL TRACTORS",
+      "13060-R K AUTO",
+      "14200-MAGADH AUTO AGENCY",
+      "12410-EXCEL AUTO",
+      "12651-JAGAT AUTOMOBILES",
+      "12654-JAI BAJRANG BAJAJ",
+      "12941-POOJA AUTOMOBILES",
+      "12942-MAHAVEER AUTOMOBILES",
+      "13011-PARADISE AUOTMOBILE",
+      "13045-CHOUDHARY AUTOMOBILE",
+      "13189-AUTO MODA",
+      "14034-MAGADH AUTO AGENCY"
+    ],
+    "Nitesh Maheshwari": [
+      "12349-SOCIETY MOTORS LTD",
+      "12987-MISHRA AUTOMOTIVE SERVICES PVT LTD",
+      "13663-AMR AUTOS",
+      "14129-SHIVA AUTOMOBILES",
+      "14453-MANORAM AUTOS PRIVATE LIMITED",
+      "12662-AKC BAJAJ",
+      "12693-RAJESH AUTOS",
+      "12775-BRIJ AUTO",
+      "12888-AQIB AUTOMOBILES PVT.LTD",
+      "13015-TANI AUTOMOBILE",
+      "13054-J P SALES CORPORATION",
+      "13386-J.S.V AUTOMOTIVES PRIVATE LIMITED",
+      "12324-PUSHPA SALES PVT LTD",
+      "12363-SHIEL AUTOS",
+      "12422-P R MOTORS",
+      "12993-BRIJ AUTO",
+      "13679-J.S.V AUTOMOTIVES PRIVATE LIMITED"
+    ],
+    "Ankit Godiyal": [
+      "12393-DEVENDRA AUTO",
+      "12951-Pankh Autowheels Pvt. Ltd",
+      "14119-SHIVA SCOOTER AGENCY",
+      "12343-MAYUR AUTO PVT LTD",
+      "12348-SHREE BALAJI MOTOR CORPORATION",
+      "12411-CITY MOTORS",
+      "12695-AHUJA AUTO SALES",
+      "12776-SHRI SAI ENTERPRISES",
+      "12866-BALAJI AUTO LINKS",
+      "13144-VAISHNAVI BAJAJ",
+      "13152-PUSHPAK AUTOMOBILES",
+      "13224-A2Z WHEEL RACE PRIVATE LIMITED",
+      "12317-Birj Motors",
+      "12434-VIKRANT AUTOMOBILES",
+      "12657-SINGH AUTO LINK (P) LTD",
+      "12694-UNITED AUTOMOBILES",
+      "12785-Pacific Motors Pvt. Ltd",
+      "12997-VIKRANT AUTOMOBILES LLP"
+    ],
+    "Anam Jaiswal": [
+      "12712-BHUMI AUTOMOBILES",
+      "13671-UDAY AUTOSALES PRIVATE LIMITED",
+      "14389-HIMALAYA SCOOTERS",
+      "12408-UDAY AUTOSALES PVT LTD",
+      "12952-NEW STAR ENGINEERING WORKS",
+      "12151-JAYPEE AUTOMOVERS",
+      "12763-AMAN MOTORS",
+      "12859-FALCON AUTOMOBILES",
+      "12932-AMAN MOTORS",
+      "12986-MISHRA AUTOMOTIVE SERVICES PVT LTD",
+      "13007-WOODLAND AUTO WHEELS"
+    ],
+    "Roopak Baliyan": [
+      "12902-SHREYANSH AUTOMOBILES",
+      "13031-OM SAI RAM",
+      "13121-MITALI AUTOMOBILE",
+      "14402-SAM MOOVERS LLP",
+      "14406-ATIKSH BAJAJ",
+      "12027-AUTO WORLD",
+      "12586-PEEKAY AUTOMOBILES LLP",
+      "12860-COSMIC MOBIKES ( A Unit Of J G Ent",
+      "12863-V & S AUTOMOBILES",
+      "12916-PEEKAY AUTOMOBILES LLP",
+      "13499-VOLKAN BAJAJ",
+      "12351-RANJU AUTOMOBILES",
+      "12412-FLAIR MOTORS PVT LTD",
+      "12837-VOLKAN BAJAJ A Unit of Vatsal",
+      "13680-COSMIC MOBIKES (A UNIT OF J G ENTER",
+      "14165-SWASTIK AUTO AGENCIES PRIVATE LIMIT"
+    ]
+  },
+  "East": {
+    "Arpan Gupta": [
+      "12406-DAS AUTO AGENCY",
+      "12445-OSL AUTO PVT LTD",
+      "12608-CHANDRANI ENTERPRISES PRIVATE LTD",
+      "12765-SOVAN BAJAJ",
+      "13046-SOVAN BAJAJ",
+      "13114-MS ENTERPRISE",
+      "13516-R K AUTOMART PRIVATE LIMITED",
+      "13620-OSL AUTO PVT LTD",
+      "12301-USG AUTOMOBILES PRIVATE LIMITED",
+      "12328-AMIT MOTORS",
+      "12400-S. S. AUTO",
+      "12429-USG AUTOMOBILES PVT LTD",
+      "12557-BINDU ENTERPRISE KTM AUTOMOBILE",
+      "13145-R.K. AUTOMOBILES",
+      "13593-OSL AUTO PRIVATE LIMITED",
+      "14155-SOVAN BAJAJ",
+      "13540-SPEED MOTORCORP"
+    ],
+    "Asish Bikash Sadangi": [
+      "12754-RM MOTORS",
+      "13023-BIKE ZONE E-STORE",
+      "14206-MSB AUTOMOTIVE PRIVATE LIMITED",
+      "12311-SHIVA SHAKTI AUTOMOBILES",
+      "12554-SONTHALIA MOTORS PVT LTD",
+      "12607-RM MOTORS",
+      "12646-SHUVALAXMI MOTORS",
+      "12687-ARMAN MOTORS",
+      "12862-JAMUNA AUTO",
+      "12907-SHANKAR GOURI AUTOMOBILES",
+      "13044-J R ENTERPRISES",
+      "13170-MM MOTORS",
+      "13176-UTKAL AUTO SERVICE",
+      "12241-SISIRABHA PROPERTIES PRIVATE LTD",
+      "12558-SAMPARK BAJAJ",
+      "12995-M M MOTORS",
+      "13539-SHREE BHARAT MOTORS LIMITED",
+      "14115-MSB AUTOMOTIVE PRIVATE LIMITED",
+      "14185-RM MOTORS",
+      "14204-SURAJ AUTOMOBILES",
+      "14207-MSB AUTOMOTIVE PRIVATE LIMITED"
+    ],
+    "Piyush Jaiswal": [
+      "12996-OLIVE AUTO",
+      "14259-PERSEVERANCE MOTORS",
+      "12174-OLIVE AUTO",
+      "12350-STANDARD MOTOR WORKS",
+      "12426-HIGHWAY BAJAJ",
+      "12526-Lakhimpur KTM",
+      "12568-SRI KRISHNA ENTERPRISE",
+      "13500-M/S PERSEVERANCE MOTORS",
+      "14392-KGI MOTORWORLD PRIVATE LIMITED",
+      "12117-Doimukh Trading Centre",
+      "12346-MANIPUR MOTORS",
+      "14016-M/S OLIVE AUTOS",
+      "14131-SENGUPTA MOTORS",
+      "14231-REVOLVE AUTOMOBILES",
+      "14260-NOVA AUTO",
+      "14390-KGI MOTORWORLD PRIVATE LIMITED"
+    ],
+    "Ananda Sankar Sinha": [
+      "13103-BANERJEE AUTO CORPORATION PVT LTD",
+      "13549-DIPAK AUTOMOBILE",
+      "12359-SILIGURI AUTO WORKS PVT LTD",
+      "12369-SALES & SERVICE AUTOMOTIVE PVT LTD",
+      "12378-PLANET WHEELS PVT LTD",
+      "12751-SILIGURI AUTO WORKS PVT LTD",
+      "12906-S.S. AUTO TRADER LLP",
+      "13589-Saluja Automobiles",
+      "12218-SARKAR AUTOMOBILES",
+      "12701-BANERJEE AUTO CORPORATION",
+      "13667-SILIGURI AUTO WORKS PRIVATE LIMITED",
+      "14158-BANERJEE AUTO CORPORATION",
+      "14421-SALES AND SERVICE AUTOMOTIVE PRIVAT"
+    ],
+    "Md Jafri Ahmed": [
+      "13163-S.K.AUTOMOBILES",
+      "13385-METAL MOTORS",
+      "14144-JKH AUTOWORLD LLP",
+      "14248-S K AUTOMOBILES",
+      "12096-GLOBAL ENTERPRISES",
+      "12143-JUBI KTM",
+      "12337-GOENKA ENGINEERING WORKS",
+      "12764-CHAMPAK AUTOMOBILES",
+      "13117-ZEUS MERCANTILE",
+      "12142-AUTOMOBILES",
+      "12364-SHREE AUTOMOBILES PVT LTD",
+      "12577-DONYI POLO HOLDINGS",
+      "12578-SHARIEF ENTERPRISE",
+      "13012-ANIRBAAN ENTERPRISE",
+      "13668-METAL MOTORS",
+      "14046-S.K.AUTOMOBILES",
+      "14249-S K AUTOMOBILES",
+      "14210-GOENKA ENGINEERING WORKS"
+    ]
+  },
+  "North": {
+    "Raj Bhardwaj": [
+      "12358-SANGAM AUTO SALES",
+      "13594-DADA MOTOR ENTERPRISES LLP",
+      "14187-BALRAJ WHEELS PRIVATE LIMITED",
+      "11676-GLOBAL MOTORS",
+      "11842-KASHMIR AUTOAIDS PVT LTD",
+      "11916-NITESH AUTOMOBILES PVT LTD",
+      "12082-Stag Trading Private Limited",
+      "12320-LOVELY AUTOS",
+      "12331-DOABA AUTOMOBILES",
+      "12368-SCOOTER AID CENTRE",
+      "12570-JARYAL AUTOMOBILE",
+      "12813-SHREE MOTORS",
+      "12816-S.B.AUTOMOBILES",
+      "12858-TIRATH & SONS AUTOMOBILE",
+      "13188-Dada Motor Enterprises LLP",
+      "13553-LADAKH ESCAPADE",
+      "13566-SHREE MOTORS",
+      "12305-PARTAP AUTO (INDIA) PVT.LTD",
+      "12330-DADA MOTORS",
+      "12501-DRIFT MOTORS",
+      "12882-ST KABIR AUTOMOBILES",
+      "13424-LADAKH ESCAPADE ADVENTURE UNLIMITED",
+      "13728-KASHMIR AUTOAIDS PRIVATE LIMITED",
+      "14143-LADAKH ESCAPADE",
+      "13534-KRISHNA AUTOMOBILES"
+    ],
+    "Rishab Sharma": [
+      "12740-AARZOO MOTORS",
+      "13527-M/s. AKM ENTERPRISES",
+      "14285-SNEHA SALES",
+      "12265-Aditya Automobiles",
+      "12347-RAJA MOTORS",
+      "12549-SHREE AMBA BAJAJ",
+      "12673-THE RACING STORE",
+      "12697-RAMBAGH SERVICE STATION",
+      "12971-RAJMANDIR MOTORS",
+      "12057-AJMER MOTORS PVT LTD",
+      "12217-KHAIRIYA AUTOMOBILES",
+      "12341-KAMAL AUTO INDUSTRIES",
+      "12415-RAJMANDIR AUTO PVT LTD",
+      "12416-SHREE SHYAM BAJAJ",
+      "12784-P.L.AUTOMOBILES PVT. LTD",
+      "13131-Kamal Auto Mart Pvt Ltd",
+      "13470-M/s. KAMAL AUTO INDUSTRIES COACH WO"
+    ],
+    "Anuj Bajpai": [
+      "13697-JSB AUTOCARS PVT LTD",
+      "11918-NITESH AUTOMOBILES PVT LTD",
+      "12146-HI-TECH AUTO MOBILES",
+      "12264-UNIVERSAL AUTOMOTIVES PVT LTD",
+      "12409-BABA MOTORS",
+      "12652-YASH CONCRETE CO",
+      "12251-J.S. AUTOMOBILES",
+      "12379-J S AUTOMOBILES",
+      "12431-KRISHNA AUTO SALES",
+      "12603-GRD TRUCKS PRIVATE LIMITED",
+      "13532-DEHRADUN AUTOMOTORS PRIVATE LIMITED"
+    ],
+    "Ankit Chhabra": [
+      "12292-Eagle Automobile",
+      "12361-SHIVA SCOOTER AGENCY",
+      "12389-BAGGA LINK SERVICE PVT LTD",
+      "13187-SWADESHI AUTO PVT LTD",
+      "13217-UNIVERSAL AUTOMOTIVES PVT LTD",
+      "13337-MADHUR MOTORS",
+      "13352-RRAG AUTOMOTIVE PVT LTD",
+      "12263-GRD TRUCKS PVT LTD",
+      "12325-DEWAN MOTORS",
+      "12332-DEWAN AUTO",
+      "12345-RAJIV AUTOMOBILES",
+      "13531-DEHRADUN AUTOMOTORS PRIVATE LIMITED",
+      "13642-SHIVA SCOOTER AGENCY",
+      "13672-Shiva Scooter Agency",
+      "13709-JSB AUTOCARS PRIVATE LIMITED",
+      "13712-BAGGA LINK SERVICE PRIVATE LIMITED"
+    ]
+  },
+  "South KAT": {
+    "Prabhu Varumulu": [
+      "12252-Popular Motor Corporation",
+      "12404-POPULAR MOTOR CORPORATION",
+      "13644-SAANVI TRADERS",
+      "12354-POPULAR MOTOR CORPORATION",
+      "12362-SUPREME AUTO DEALERS PVT LTD",
+      "12381-KALYANI MOTORS",
+      "12433-SUPREME AUTO DEALERS PVT LTD",
+      "12370-KAMATH MOTORS",
+      "14164-POPULAR MOTOR CORPORATION",
+      "14179-SUPREME AUTO DEALERS PRIVATE LIMITE",
+      "13535-PVR TRIUMPH"
+    ],
+    "Gera Ajith": [
+      "12327-AKSHAYA AUTO SERVICE",
+      "12424-BIJJARAGI BAJAJ",
+      "12908-LAKSHMI AUTO",
+      "13561-JAIN MOTOCORP PVT LTD",
+      "13796-CHANNAMMA MOTORS",
+      "12374-CHANNAMMA MOTORS",
+      "12399-VKG BAJAJ",
+      "12642-YASHASWINI BIKES",
+      "12356-SAI AUTOMOBILES",
+      "12391-JAGAJAMPI AUTO PVT LTD",
+      "12396-JAIN MOTORS",
+      "12623-SAI AUTOMOBILES",
+      "12713-VAISHALI TRADING CORPORATION",
+      "14153-BIJJARGI BAJAJ"
+    ],
+    "Gangesh A": [
+      "12367-VENKATA RAMANA AUTOMOBILES",
+      "12838-MAHI BIKES",
+      "12118-HAROON SUPER BYKES",
+      "12159-GEETHA AUTO AGENCY",
+      "12353-STANDARD AUTOMOBILES",
+      "12371-M.G.B. MOTOR & AUTO AGENCIES",
+      "12630-KAIZEN AUTOMOTIVES",
+      "12836-SREE NANDI MOTORS",
+      "12935-ESSENCEA AUTOMOTIVE PVT LTD",
+      "14123-RETRO MOTORCYCLES LLP"
+    ],
+    "Dharmikesh Reddy Maramred": [
+      "12444-SRI VINAYAKA MOBIKES PVT LTD",
+      "12270-S & S AUTOMOTIVES",
+      "12403-HAROON MOTORS",
+      "12405-ABHINANDAN MOTORS PVT LTD",
+      "13261-VARUN MOTORS PRIVATE LIMITED",
+      "14252-TIRUMALA AUTOMOTIVES",
+      "12288-SNR Motors",
+      "12418-VARUN MOTORS",
+      "12668-SNR MOTORS",
+      "13536-RETRO MOTORCYCLES LLP",
+      "13592-SRI VINAYAKA MOBIKES PRIVATE LIMITE"
+    ],
+    "Ratan Potnuru": [
+      "13256-VARUN MOTORS PRIVATE LIMITED",
+      "13257-VARUN MOTORS PRIVATE LIMITED",
+      "13590-VARUN MOTORS PRIVATE LIMITED",
+      "12141-DEEKAY AUTOMOTIVES",
+      "12221-SAI MOTOR PLAZA",
+      "12267-SRI SIDDHI VINAYAKA AUTOMOBILES",
+      "12335-SRI RAM ENTERPRISES",
+      "12398-SAI MOTOR PLAZA",
+      "12648-TIRUMALA AUTOMOTIVES",
+      "12806-SRI VENKATESWARA MOTOCORP",
+      "12994-SRI RAM ENTERPRISES",
+      "13255-VARUN MOTORS PRIVATE LIMITED",
+      "13258-VARUN MOTORS PRIVATE LIMITED",
+      "13259-VARUN MOTORS PRIVATE LIMITED",
+      "13260-VARUN MOTORS PRIVATE LIMITED",
+      "12147-VARUN MOTORS",
+      "12413-VARUN MOTORS",
+      "12435-VARUN MOTORS",
+      "12440-VARUN MOTORS",
+      "12706-VARUN MOTORS",
+      "12819-VARUN MOTORS"
+    ],
+    "Raghav B Gandhi": [
+      "14192-KHIVRAJ ELIXIR PRIVATE LIMITED",
+      "12382-AMBA AUTO SALES AND SERVICES",
+      "12269-ROCKLINE AUTMOBILES",
+      "12442-KHIVRAJ MOTORS",
+      "12727-BHAGYA AUTO",
+      "13533-KEERTHI",
+      "14191-KHIVRAJ ELIXIR PRIVATE LIMITED",
+      "13591-AUTOGENIKA A UNIT OF KHIVRAJ ELIXIR"
+    ]
+  },
+  "South TK": {
+    "Harish A": [
+      "12266-YAAZHINIY MOTORS",
+      "12388-PRINCE HARDWARE",
+      "12401-R. K. MOTORS",
+      "12707-G.B.MOTORS",
+      "12807-KRISHNAA AUTOS",
+      "11913-RK Motors",
+      "12166-ATHEN AUTOMOBILES",
+      "12173-Roja Autos",
+      "12394-AAKASH AUTOMOBILES PVT LTD",
+      "12559-ATHEN AUTOMOBILES",
+      "12629-Arasanautos",
+      "12975-RK MOTORS",
+      "13600-AAKASH AUTOMOBILES PRIVATE LIMITED",
+      "12329-ARASU AUTOS",
+      "12565-SRI SHAI AUTOS",
+      "12944-NAS MOTORS",
+      "13627-RK Motors",
+      "14175-AAKASH AUTOMOBILES PRIVATE LIMITED"
+    ],
+    "Sanjay H": [
+      "12342-K V R MOTORS",
+      "12377-ZAIN MOTORS",
+      "12427-KVR BIKES - A Unit under KVR AUTOMO",
+      "12428-KVR AUTOMOBILES PVT LTD",
+      "12380-K V R VEHICLES",
+      "12738-POPULAR MOTOR CORPORATION",
+      "12981-POONTHOTTATHIL MOTORS",
+      "12982-JKB MOTORS",
+      "11484-ARCHANA MOTORS",
+      "12036-AQUATERRA AUTO LLP",
+      "12703-A.V.AUTOMOBILES",
+      "13658-KVR AUTOMOBILES PRIVATE LIMITED"
+    ],
+    "Sabareesh M.C": [
+      "12386-AKASH BAJAJ",
+      "12573-NALLI MOTORS",
+      "12691-JAILAXMI AGENCIESS",
+      "12760-VISHNU RACING MOTORS",
+      "12487-JAILAXMI AGENCIESS",
+      "12488-Sri Vasa Autos",
+      "12809-EAGLE MOTORS",
+      "12810-EAGLE MOTORS",
+      "12985-AADHITHEYA BIKES",
+      "12049-VICTORY MOTOR CORPORATION",
+      "12181-EAGLE MOTORS",
+      "12211-ARAV MOTOR CORP PVT LTD",
+      "12212-PAAVAI MOTORS",
+      "12598-Sri Vasa Autos",
+      "12772-EAGLE MOTORS",
+      "14130-NALLI MOTORS",
+      "14182-AKASH BAJAJ"
+    ],
+    "Sarov Santhosh K": [
+      "12392-POPULAR MOTOR CORPORATION",
+      "13177-SARATHY BIKES PVT LTD",
+      "12355-POPULAR MOTOR CORPORATION",
+      "12946-ST PATRICK MOTORS",
+      "13623-PIONEER MOTORS",
+      "12103-JOYEES INTERNATIONAL",
+      "12339-GEO AUTOMOBILES",
+      "12402-SARATHY MOTORS",
+      "12448-DEEDI AUTOMOBILES",
+      "12973-POPULAR MOTOR CORPORATION",
+      "13541-SYAMADYNAMIC MOTORCYCLES PVT LTD",
+      "13596-PIONEER MOTORS",
+      "13626-SARATHY BIKES PVT. LTD"
+    ],
+    "Manoj Mohan": [
+      "12665-VETRIVEL MOTORS",
+      "12323-JAI AUTOMOBILES",
+      "12340-JAI AUTOS",
+      "12360-SUSEE SCOOTER CENTRE",
+      "12376-SRIJAI AUTOS PRIVATE LIMITED",
+      "12414-KHIVRAJ AUTOMOBILES & INFRASTRUC",
+      "12690-Shanmugam Motors SK Raman-KTM",
+      "13010-GUSTO RACING",
+      "12319-KLN AUTOMOBILES PVT LTD",
+      "12420-V M S MOTORS",
+      "12423-MOHTEEJ AUTOMOBILES",
+      "13625-SRIJAI AUTOS PRIVATE LIMITED",
+      "14188-KHIVRAJ ELIXIR PRIVATE LIMITED",
+      "14254-KING AUTO PRIVATE LIMITED",
+      "13528-AUTOGENIKA (A UNIT OF KHIVRAJ ELIXI"
+    ]
+  },
+  "West": {
+    "Jakkam Karthik": [
+      "12206-RAJ MOTORS",
+      "13136-PANDURANG AUTOMOTIVES",
+      "13142-STAR AUTOMOTIVE",
+      "10732-AUTO INDIA",
+      "12238-VENKATESH MOTORS",
+      "12326-ARUN AUTOMOBILES",
+      "12375-AHERKAR AUTOMOBILES",
+      "12466-CRYSTAL TRADELINKS",
+      "12486-SARBANI MOTORS",
+      "12521-PATNI AUTOMOBILES",
+      "12552-ASHOK AUTOTECH INDIA PVT LTD",
+      "12601-Bhaagyoday motors",
+      "13013-RAJYOG AUTOMOBILES",
+      "13252-UNIQUE AUTOMOBILES PVT LTD",
+      "12161-PATHAN INDUSTRIAL AGENCIES",
+      "12175-STAR AUTOMOTIVES",
+      "12357-SITARA MOTORS PVT LTD",
+      "12653-KALESHWAR MOTORS",
+      "12704-TORNA ENDEAVOURS PVT LTD",
+      "12747-STAR AUTOMOTIVES",
+      "13595-Unique Automobiles Pvt. Ltd",
+      "13647-ARUN AUTOMOBILES",
+      "14148-GOA SUPER MOTO & AUTOMOBILES LLP",
+      "13529-B U BHANDARI AUTO PRIVATE LIMITED"
+    ],
+    "Pradeep Meena": [
+      "12322-TRIPUR AUTO",
+      "12383-FRONTIER MOTORS",
+      "12631-KATARIA MOTORS",
+      "12688-SETH MOTORS",
+      "12984-A G CORPORATIONS",
+      "12352-SURJEET AUTO AGENCY",
+      "12366-VANDANA AUTO",
+      "12530-MAHAVIR AUTOMOBILES",
+      "12774-ANJUSHREE AUTOMOBILE",
+      "12796-SUNIL SCOOTERS PVT LTD",
+      "12857-SHRESTH AUTO CENTER",
+      "12861-SHASTRI AUTO",
+      "12933-ANJUSHREE AUTOMOBILES",
+      "13002-AKSHAY AUTOMOBILES",
+      "13162-OM ADVANCE AUTOMOBILE PVT LTD",
+      "13560-OM ADVANCE AUTOMOBILES PVT.LTD.",
+      "12338-GUPTA & SONS MOTORS (P) LTD",
+      "12574-DV Automobiles",
+      "12689-SIXTH GEAR",
+      "12731-AKSHAY AUTOMOBILES",
+      "12737-RAJ AUTOMOTIVE",
+      "12974-AVTAR AGENCY",
+      "13777-SUKHI DS AUTOMOBILES PRIVATE LIMITE",
+      "14035-FRONTIER MOTORS",
+      "14344-EMINENT MOBILITY",
+      "13669-SALASAR AUTOHAUS PROBIKING PVT LTD"
+    ],
+    "Brijesh Pandey": [
+      "12336-AAKAR MOTORS",
+      "12649-NA AUTOLINK",
+      "12677-MARK AUTOMOTIVES",
+      "12824-KENA AUTO",
+      "12883-PRIDE AUTOMOBILES",
+      "12934-RAM AUTO",
+      "12160-NIS AUTO",
+      "12168-PRIDE AUTOMOBILES",
+      "12373-MAHESH SALES CORPORATION",
+      "12397-GUJARAT MOTORS PVT LTD",
+      "12441-A.S.MOTORS",
+      "12606-SAKAL AUTO",
+      "12660-LORDS GRAND",
+      "13037-AMIN AUTO AGENCIES",
+      "13469-SHISA AUTO",
+      "13616-GUJARAT MOTORS PVT. LTD.",
+      "12178-MANASH MOTORS",
+      "12315-AMIN AUTOMOBILES",
+      "12437-GALLOPS AUTOMOBILES PRIVATE LIMITED",
+      "12566-MANASH MOTORS",
+      "12814-Platinum Motors",
+      "12921-MAHALAXMI MOTORS",
+      "12998-KARTAVYA AUTO",
+      "13008-SHANTANU AUTOMOTIVE",
+      "13537-RIYA AUTOTECH PRIVATE LIMITED",
+      "14420-GUJARAT MOTORS PRIVATE LIMITED",
+      "14422-PRIDE AUTOMOBILE"
+    ],
+    "Alok Kumar Tiwari": [
+      "13530-B U BHANDARI AUTO PRIVATE LIMITED",
+      "14152-PAGARIYA AUTO CENTRE LLP",
+      "12087-KAMDA AUTO RIDERS",
+      "12390-SAI SERVICE PRIVATE LIMITED",
+      "12432-PAGARIYA AUTO CENTRE",
+      "12439-WASAN & SONS",
+      "12639-ORANGE AUTOMOTIVE",
+      "12778-ORANGE MOTORRAD",
+      "13118-J C MOTOPLEX",
+      "13335-MALPANI BAJAJ",
+      "14284-B U BHANDARI AUTO PRIVATE LIMITED",
+      "12184-Shah Autolinks LLP",
+      "12201-NAIK NIMBALKAR AUTO",
+      "12239-HERAMMBA AUTOMOBILES PVT LTD",
+      "12246-Garve Developments",
+      "12253-C and C Company",
+      "12254-SAI AUTO",
+      "12293-AadiVenoo Motors",
+      "12421-HOLEYDAYS AUTO SERVICE",
+      "12567-PB NARSALE WHEELS PVT LTD",
+      "12759-SHREENIWAS MOTORS",
+      "12771-RUTUJA AUTO PVT LTD",
+      "12922-MANDAR MOTORS",
+      "12976-HERAMMBA AUTO",
+      "13154-Giriraj Enterprises Automobiles",
+      "13155-ROYAL MOTORS",
+      "13708-SAI SERVICE PRIVATE LIMITED"
+    ],
+    "Raghvendra Raghuvanshi": [
+      "12162-AHUJA AUTOMOBILES",
+      "12372-SURYODAY MOTORS PVT LTD",
+      "12746-S K AUTOMOBILES",
+      "13059-NAMITA MOTORS",
+      "12316-K M Automotives",
+      "12407-GURU GOBIND AUTOMOBILES",
+      "12443-SAI SERVICE AGENCY - BOMBAY",
+      "12446-KANCHAN AUTO PVT LTD",
+      "12447-GURU GOBIND AUTOMOBILES",
+      "13128-GEO TRANS INTERNATIONAL PVT LTD",
+      "13193-SWASTIK MOTORS NX",
+      "13538-SHAMAN MOTORS PRIVATE LIMITED",
+      "14124-VALIANT MOTORS"
+    ]
+  }
+};
 const QUALIFICATIONS = ["Below 10th","10th","12th / ITI","Diploma","Graduation","Post Graduation"];
 const TENURE = ["Less than 1 year","1–2 years","2–3 years","3–5 years","More than 5 years"];
 const SALARY_BANDS = ["Below ₹15,000","₹15,000–20,000","₹20,001–25,000","₹25,001–30,000","₹30,001–40,000","Above ₹40,000"];
@@ -298,10 +877,12 @@ const FACTORS = ["Low salary","Limited salary growth","High workload","Long work
 const STEPS = [
   {
     id:"profile", label:"Staff profile", title:"About you and your workshop",
-    sub:"No name is collected. Answers are anonymous and used only in aggregate.",
+    sub:"Please enter your name and select your workshop details. Responses are used for survey analysis.",
     fields:[
-      {id:"dealer", type:"text", label:"Dealer name or dealer code", required:true, placeholder:"e.g. PBK-MUM-014"},
-      {id:"region", type:"select", label:"Region", required:true, options:REGIONS},
+      {id:"technicianName", type:"text", label:"Technician name", required:true, placeholder:"Enter your full name"},
+      {id:"region", type:"select", label:"Circle / Region", required:true, options:REGIONS},
+      {id:"asm", type:"select", label:"ASM", required:true, options:[]},
+      {id:"dealer", type:"select", label:"Dealer code - Dealer name", required:true, options:[]},
       {id:"designation", type:"select", label:"Designation", required:true, options:DESIGNATIONS},
       {id:"qualification", type:"select", label:"Highest qualification", required:true, options:QUALIFICATIONS},
       {id:"tenure", type:"select", label:"How long have you worked at this dealership?", required:true, options:TENURE},
@@ -424,7 +1005,7 @@ function renderHero(){
     <p>KTM &amp; Triumph dealership workshop staff — this survey covers your job, pay and benefits, facilities, management, training and growth. It takes about 5 minutes.</p>
     <div class="assure">
       <span>&#9679;</span>
-      <span>Your name is never collected. Please answer honestly &mdash; individual responses are kept confidential and only reported in aggregate.</span>
+      <span>Your name is collected only to identify the responding technician. Please answer honestly &mdash; responses are handled confidentially and used for survey analysis.</span>
     </div>`;
   return d;
 }
@@ -520,8 +1101,37 @@ function renderField(f){
 
   if(f.type === "select"){
     const sel = document.createElement("select");
-    sel.innerHTML = `<option value="">Select&hellip;</option>` + f.options.map(o=>`<option value="${o}" ${state.answers[f.id]===o?"selected":""}>${o}</option>`).join("");
-    sel.onchange = (e)=>{ state.answers[f.id] = e.target.value; };
+
+    let options = f.options || [];
+    if(f.id === "asm"){
+      const region = state.answers.region || "";
+      options = region && DEALER_MAPPING[region] ? Object.keys(DEALER_MAPPING[region]) : [];
+    } else if(f.id === "dealer"){
+      const region = state.answers.region || "";
+      const asm = state.answers.asm || "";
+      options = (region && asm && DEALER_MAPPING[region] && DEALER_MAPPING[region][asm])
+        ? DEALER_MAPPING[region][asm]
+        : [];
+    }
+
+    sel.innerHTML = `<option value="">Select&hellip;</option>` +
+      options.map(o=>`<option value="${o}" ${state.answers[f.id]===o?"selected":""}>${o}</option>`).join("");
+
+    sel.onchange = (e)=>{
+      state.answers[f.id] = e.target.value;
+
+      // Cascade: Circle/Region -> ASM -> Dealer
+      if(f.id === "region"){
+        state.answers.asm = "";
+        state.answers.dealer = "";
+      } else if(f.id === "asm"){
+        state.answers.dealer = "";
+      }
+      render();
+    };
+
+    sel.disabled = (f.id === "asm" && !state.answers.region) ||
+                   (f.id === "dealer" && (!state.answers.region || !state.answers.asm));
     wrap.appendChild(sel);
   }
 
@@ -832,7 +1442,7 @@ async function loadAndRenderResults(wrap, loadingEl){
 }
 
 function exportCSV(records){
-  const cols = ["ts","dealer","region","designation","qualification","tenure","salary",
+  const cols = ["ts","technicianName","region","asm","dealer","designation","qualification","tenure","salary",
     "q5","q6","q7","q8","q9","q10","q11","q12","q13","q14","q15","q16","q17","q18","q19","q20",
     "q21","q22","q23","q24","q25","q26","q27","q28","q29","q30","q31"];
   const rows = [cols.join(",")];
