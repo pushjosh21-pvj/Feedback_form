@@ -277,6 +277,397 @@
    inside Code.gs, so it never appears in the published page source.
    =================================================================== */
 const API_URL = "https://script.google.com/macros/s/AKfycbx9Y_zlmwt6jwu9tdFpxIMtAtYyJOJtf7K3ibZWddIAmHsHuLS81nYy29w0ymrxZszP/exec";
+const LANGUAGES = [
+  { code: "en", label: "English" },
+  { code: "hi", label: "हिन्दी (Hindi)" },
+  { code: "kn", label: "ಕನ್ನಡ (Kannada)" },
+  { code: "te", label: "తెలుగు (Telugu)" },
+  { code: "ta", label: "தமிழ் (Tamil)" },
+  { code: "ml", label: "മലയാളം (Malayalam)" }
+];
+
+const I18N = {
+  hi: {
+    "Next": "आगे बढ़ें", "Back": "पीछे", "Submit feedback": "फीडबैक सबमिट करें", "Select…": "चुनें…",
+    "Section": "अनुभाग", "of": "में से",
+    "Staff profile": "कर्मचारी प्रोफ़ाइल", "About you and your workshop": "आपके और आपके वर्कशॉप के बारे में",
+    "Please enter your name and select your workshop details. Responses are used for survey analysis.": "कृपया अपना नाम दर्ज करें और अपने वर्कशॉप का विवरण चुनें।",
+    "Technician name": "टेकनीशियन का नाम", "Age": "आयु", "Circle / Region": "सर्कल / क्षेत्र", "Designation": "पद", "Highest qualification": "उच्चतम योग्यता",
+    "How long have you worked at this dealership?": "आपने इस डीलरशिप में कितने समय तक काम किया है?",
+    "Approximate monthly in-hand salary": "अनुमानित मासिक वेतन",
+    "Job satisfaction": "कार्य संतुष्टि", "Overall job satisfaction": "समग्र कार्य संतुष्टि",
+    "How satisfied are you with your current job at this dealership?": "आप इस डीलरशिप में अपनी वर्तमान नौकरी से कितने संतुष्ट हैं?",
+    "How satisfied are you with your current salary in relation to your job responsibilities?": "आप अपनी नौकरी की जिम्मेदारियों के संबंध में अपने वर्तमान वेतन से कितने संतुष्ट हैं?",
+    "How satisfied are you with your current workload?": "आप अपने वर्तमान कार्यभार से कितने संतुष्ट हैं?",
+    "Salary & facilities": "वेतन और सुविधाएं",
+    "How satisfied are you with the benefits provided by the dealership?": "डीलरशिप द्वारा दिए जाने वाले लाभों से आप कितने संतुष्ट हैं?",
+    "How satisfied are you with the workshop's basic employee facilities?": "वर्कशॉप की बुनियादी कर्मचारी सुविधाओं से आप कितने संतुष्ट हैं?",
+    "Working environment & management": "कार्य का माहौल और प्रबंधन",
+    "Do you feel that you are treated with respect by the dealer management and workshop supervisors?": "क्या आपको लगता है कि डीलर प्रबंधन और पर्यवेक्षकों द्वारा आपके साथ सम्मानपूर्वक व्यवहार किया जाता है?",
+    "How satisfied are you with the availability of required tools, equipment, PPE and working resources to perform your job effectively?": "अपना काम प्रभावी ढंग से करने के लिए आवश्यक उपकरणों और संसाधनों की उपलब्धता से आप कितने संतुष्ट हैं?",
+    "Training & growth": "प्रशिक्षण और विकास",
+    "How satisfied are you with the technical training provided to improve your skills?": "अपने कौशल में सुधार के लिए दिए गए तकनीकी प्रशिक्षण से आप कितने संतुष्ट हैं?",
+    "How satisfied are you with the career growth opportunities available to you?": "उपलब्ध करियर विकास के अवसरों से आप कितने संतुष्ट हैं?",
+    "How satisfied are you with the incentive structure (i.e., additional pay over your salary based on achieving certain targets)?": "आप प्रोत्साहन संरचना (इंसेंटिव) से कितने संतुष्ट हैं?",
+    "Key factors": "मुख्य कारक", "What's affecting your satisfaction": "आपकी संतुष्टि को क्या प्रभावित कर रहा है",
+    "What are the major factors affecting your satisfaction or motivation at work?": "काम पर आपकी संतुष्टि को प्रभावित करने वाले प्रमुख कारक क्या हैं?",
+    "Final assessment": "अंतिम मूल्यांकन",
+    "If you receive a suitable opportunity, how likely are you to continue working with this dealership?": "यदि आपको कोई उपयुक्त अवसर मिलता है, तो आप इस डीलरशिप के साथ काम करना जारी रखने की कितनी संभावना रखते हैं?",
+    "What is one thing the dealership should improve to make your work experience better?": "डीलरशिप को आपके कार्य अनुभव को बेहतर बनाने के लिए किस एक चीज़ में सुधार करना चाहिए?",
+    "Very Satisfied": "बहुत संतुष्ट", "Satisfied": "संतुष्ट", "Neutral": "तटस्थ", "Dissatisfied": "असंतुष्ट", "Very Dissatisfied": "बहुत असंतुष्ट", "Always": "हमेशा", "Usually": "अक्सर", "Sometimes": "कभी-कभी", "Rarely": "कभी-कभार", "Never": "कभी नहीं",
+    "Enter your full name" : "अपना पूरा नाम दर्ज करें", "Dealer Code - Dealer Name" : "डीलर कोड - डीलर का नाम", "ASM" : "एरिया सर्विस मैनेजर", 
+    "Rate each area from Very Satisfied to Very Dissatisfied.": "प्रत्येक क्षेत्र को बहुत संतुष्ट से लेकर बहुत असंतुष्ट तक रेट करें।", 
+    "Salary, benefits & employee facilities": "वेतन, लाभ और कर्मचारी सुविधाएं",
+    "e.g. PF, ESI / medical insurance, bonus" : "जैसे पीएफ, ईएसआई / चिकित्सा बीमा, बोनस",
+    "Drinking water, washroom, changing/locker facility, rest area, canteen" : "पेयजल, शौचालय, बदलने / लॉकर सुविधा, विश्राम क्षेत्र, कैंटीन",
+    "Training, career growth & motivation" : "प्रशिक्षण, करियर विकास और प्रेरणा",
+    "Low salary" : "कम वेतन", "Limited salary growth" : "सीमित वेतन वृद्धि", "High workload" : "काम का ज़्यादा बोझ", 
+    "Long working hours" : "काम के लंबे घंटे", "Lack of manpower" : "कर्मचारी की कमी", "Limited career growth" : "सीमित करियर विकास के अवसर",
+    "Lack of training" : "सीमित प्रशिक्षण के अवसर", "Lack of recognition" : "पहचान न मिलना", 
+    "Incentive not attractive": "इंसेंटिव आकर्षक नहीं है", "Incentive calculation not clear/fair": "इंसेंटिव की गणना स्पष्ट/न्यायसंगत नहीं है",
+    "Management behaviour" : "व्यवस्थापकीय वर्तन", "Supervisor behaviour" : "पर्यवेक्षक का व्यवहार", "Workshop facilities" : "वर्कशॉप सुविधाएं", 
+    "Lack of tools/equipment" : "औज़ारों/उपकरणों की कमी", "Lack of employee benefits": "कर्मचारी लाभों की कमी", "Leave-related issues": "छुट्टी से संबंधित मुद्दे",
+    "Distance/travel to workplace": "कार्यस्थल तक की दूरी/यात्रा", "Job security": "नौकरी की सुरक्षा", "Other": "अन्य",
+    "Definitely continue": "निश्चित रूप से जारी रखेंगे", "Probably continue": "संभावना है कि जारी रखेंगे", "Not sure": "पक्का नहीं", 
+    "Probably leave": "संभावना है कि छोड देंगे", "Definitely leave": "निश्चित रूप से छोड देंगे",
+    "Pro Biking · Staff Voice":"प्रो बाइकिंग · स्टाफ़ की आवाज़"
+  },
+kn: {
+    "Next": "ಮುಂದೆ", 
+    "Back": "ಹಿಂದೆ", 
+    "Submit feedback": "ಪ್ರತಿಕ್ರಿಯೆ ಸಲ್ಲಿಸಿ", 
+    "Select…": "ಆಯ್ಕೆಮಾಡಿ…",
+    "Section": "ವಿಭಾಗ", 
+    "of": "ರಲ್ಲಿ",
+    "Staff profile": "ಸಿಬ್ಬಂದಿ ವಿವರ", 
+    "About you and your workshop": "ನಿಮ್ಮ ಮತ್ತು ನಿಮ್ಮ ವರ್ಕ್‌ಶಾಪ್ ಬಗ್ಗೆ",
+    "Please enter your name and select your workshop details. Responses are used for survey analysis.": "ದಯವಿಟ್ಟು ನಿಮ್ಮ ಹೆಸರನ್ನು ನಮೂದಿಸಿ ಮತ್ತು ನಿಮ್ಮ ವರ್ಕ್‌ಶಾಪ್ ವಿವರಗಳನ್ನು ಆಯ್ಕೆಮಾಡಿ. ಪ್ರತಿಕ್ರಿಯೆಗಳನ್ನು ಸಮೀಕ್ಷೆಯ ವಿಶ್ಲೇಷಣೆಗಾಗಿ ಬಳಸಲಾಗುತ್ತದೆ.",
+    "Technician name": "ತಂತ್ರಜ್ಞರ (ಟೆಕ್ನಿಷಿಯನ್) ಹೆಸರು", 
+    "Age": "ವಯಸ್ಸು", 
+    "Circle / Region": "ವಲಯ / ಪ್ರದೇಶ", 
+    "Designation": "ಹುದ್ದೆ", 
+    "Highest qualification": "ಅತ್ಯುನ್ನತ ವಿದ್ಯಾರ್ಹತೆ",
+    "How long have you worked at this dealership?": "ನೀವು ಈ ಡೀಲರ್‌ಶಿಪ್‌ನಲ್ಲಿ ಎಷ್ಟು ಸಮಯದಿಂದ ಕೆಲಸ ಮಾಡಿದ್ದೀರಿ?",
+    "Approximate monthly in-hand salary": "ಅಂದಾಜು ಮಾಸಿಕ ಕೈಗೆ ಸಿಗುವ ಸಂಬಳ",
+    "Job satisfaction": "ಉದ್ಯೋಗ ತೃಪ್ತಿ", 
+    "Overall job satisfaction": "ಒಟ್ಟಾರೆ ಉದ್ಯೋಗ ತೃಪ್ತಿ",
+    "How satisfied are you with your current job at this dealership?": "ಈ ಡೀಲರ್‌ಶಿಪ್‌ನಲ್ಲಿ ನಿಮ್ಮ ಪ್ರಸ್ತುತ ಉದ್ಯೋಗದಿಂದ ನೀವು ಎಷ್ಟು ತೃಪ್ತರಾಗಿದ್ದೀರಿ?",
+    "How satisfied are you with your current salary in relation to your job responsibilities?": "ನಿಮ್ಮ ಕೆಲಸದ ಜವಾಬ್ದಾರಿಗಳಿಗೆ ಸಂಬಂಧಿಸಿದಂತೆ ನಿಮ್ಮ ಪ್ರಸ್ತುತ ಸಂಬಳದಿಂದ ನೀವು ಎಷ್ಟು ತೃಪ್ತರಾಗಿದ್ದೀರಿ?",
+    "How satisfied are you with your current workload?": "ನಿಮ್ಮ ಪ್ರಸ್ತುತ ಕೆಲಸದ ಹೊರೆಯ ಬಗ್ಗೆ ನೀವು ಎಷ್ಟು ತೃಪ್ತರಾಗಿದ್ದೀರಿ?",
+    "Salary & facilities": "ಸಂಬಳ ಮತ್ತು ಸೌಲಭ್ಯಗಳು",
+    "How satisfied are you with the benefits provided by the dealership?": "ಡೀಲರ್‌ಶಿಪ್ ಒದಗಿಸುವ ಪ್ರಯೋಜನಗಳಿಂದ ನೀವು ಎಷ್ಟು ತೃಪ್ತರಾಗಿದ್ದೀರಿ?",
+    "How satisfied are you with the workshop's basic employee facilities?": "ವರ್ಕ್‌ಶಾಪ್‌ನ ಮೂಲಭೂತ ಸಿಬ್ಬಂದಿ ಸೌಲಭ್ಯಗಳ ಬಗ್ಗೆ ನೀವು ಎಷ್ಟು ತೃಪ್ತರಾಗಿದ್ದೀರಿ?",
+    "Working environment & management": "ಕೆಲಸದ ವಾತಾವರಣ ಮತ್ತು ಆಡಳಿತ (ಮ್ಯಾನೇಜ್ಮೆಂಟ್)",
+    "Do you feel that you are treated with respect by the dealer management and workshop supervisors?": "ಡೀಲರ್ ಆಡಳಿತ ಮತ್ತು ವರ್ಕ್‌ಶಾಪ್ ಮೇಲ್ವಿಚಾರಕರು (ಸೂಪರ್‌ವೈಸರ್‌ಗಳು) ನಿಮ್ಮನ್ನು ಗೌರವದಿಂದ ನಡೆಸಿಕೊಳ್ಳುತ್ತಾರೆ ಎಂದು ನೀವು ಭಾವಿಸುತ್ತೀರಾ?",
+    "How satisfied are you with the availability of required tools, equipment, PPE and working resources to perform your job effectively?": "ನಿಮ್ಮ ಕೆಲಸವನ್ನು ಪರಿಣಾಮಕಾರಿಯಾಗಿ ನಿರ್ವಹಿಸಲು ಅಗತ್ಯವಾದ ಉಪಕರಣಗಳು, ಸಾಧನಗಳು, PPE ಮತ್ತು ಕೆಲಸದ ಸಂಪನ್ಮೂಲಗಳ ಲಭ್ಯತೆಯಿಂದ ನೀವು ಎಷ್ಟು ತೃಪ್ತರಾಗಿದ್ದೀರಿ?",
+    "Training & growth": "ತರಬೇತಿ ಮತ್ತು ಬೆಳವಣಿಗೆ",
+    "How satisfied are you with the technical training provided to improve your skills?": "ನಿಮ್ಮ ಕೌಶಲ್ಯಗಳನ್ನು ಸುಧಾರಿಸಲು ನೀಡಲಾದ ತಾಂತ್ರಿಕ ತರಬೇತಿಯಿಂದ ನೀವು ಎಷ್ಟು ತೃಪ್ತರಾಗಿದ್ದೀರಿ?",
+    "How satisfied are you with the career growth opportunities available to you?": "ನಿಮಗೆ ಲಭ್ಯವಿರುವ ವೃತ್ತಿ ಬೆಳವಣಿಗೆಯ ಅವಕಾಶಗಳಿಂದ ನೀವು ಎಷ್ಟು ತೃಪ್ತರಾಗಿದ್ದೀರಿ?",
+    "How satisfied are you with the incentive structure (i.e., additional pay over your salary based on achieving certain targets)?": "ಪ್ರೋತ್ಸಾಹಕ ವ್ಯವಸ್ಥೆ (ಅಂದರೆ, ನಿರ್ದಿಷ್ಟ ಗುರಿಗಳನ್ನು ಸಾಧಿಸುವ ಆಧಾರದ ಮೇಲೆ ಸಿಗುವ ಹೆಚ್ಚುವರಿ ಪಾವತಿ) ಯಿಂದ ನೀವು ಎಷ್ಟು ತೃಪ್ತರಾಗಿದ್ದೀರಿ?",
+    "Key factors": "ಪ್ರಮುಖ ಅಂಶಗಳು", 
+    "What's affecting your satisfaction": "ನಿಮ್ಮ ತೃಪ್ತಿಯ ಮೇಲೆ ಪ್ರಭಾವ ಬೀರುತ್ತಿರುವುದು ಏನು",
+    "What are the major factors affecting your satisfaction or motivation at work?": "ಕೆಲಸದಲ್ಲಿ ನಿಮ್ಮ ತೃಪ್ತಿ ಅಥವಾ ಪ್ರೇರಣೆಯ ಮೇಲೆ ಪ್ರಭಾವ ಬೀರುವ ಪ್ರಮುಖ ಅಂಶಗಳು ಯಾವುವು?",
+    "Final assessment": "ಅಂತಿಮ ಮೌಲ್ಯಮಾಪನ",
+    "If you receive a suitable opportunity, how likely are you to continue working with this dealership?": "ನಿಮಗೆ ಸೂಕ್ತವಾದ ಅವಕಾಶ ದೊರೆತರೆ, ನೀವು ಈ ಡೀಲರ್‌ಶಿಪ್‌ನಲ್ಲಿ ಕೆಲಸ ಮುಂದುವರಿಸುವ ಸಾಧ್ಯತೆ ಎಷ್ಟು?",
+    "What is one thing the dealership should improve to make your work experience better?": "ನಿಮ್ಮ ಕೆಲಸದ ಅನುಭವವನ್ನು ಉತ್ತಮಗೊಳಿಸಲು ಡೀಲರ್‌ಶಿಪ್ ಸುಧಾರಿಸಬೇಕಾದ ಒಂದು ಅಂಶ ಯಾವುದು?",
+    "Very Satisfied": "ತುಂಬಾ ತೃಪ್ತಿಕರ", 
+    "Satisfied": "ತೃಪ್ತಿಕರ", 
+    "Neutral": "ತಟಸ್ಥ", 
+    "Dissatisfied": "ಅತೃಪ್ತಿಕರ", 
+    "Very Dissatisfied": "ತುಂಬಾ ಅತೃಪ್ತಿಕರ", 
+    "Always": "ಯಾವಾಗಲೂ", 
+    "Usually": "ಸಾಮಾನ್ಯವಾಗಿ", 
+    "Sometimes": "ಕೆಲವೊಮ್ಮೆ", 
+    "Rarely": "ಅಪರೂಪವಾಗಿ", 
+    "Never": "ಎಂದಿಗೂ ಇಲ್ಲ",
+    "Enter your full name" : "ನಿಮ್ಮ ಪೂರ್ಣ ಹೆಸರನ್ನು ನಮೂದಿಸಿ", 
+    "Dealer Code - Dealer Name" : "ಡೀಲರ್ ಕೋಡ್ - ಡೀಲರ್ ಹೆಸರು", 
+    "ASM" : "ಏರಿಯಾ ಸರ್ವೀಸ್ ಮ್ಯಾನೇಜರ್ (ASM)", 
+    "Rate each area from Very Satisfied to Very Dissatisfied.": "ಪ್ರತಿಯೊಂದು ವಿಭಾಗವನ್ನು ಅತ್ಯಂತ ತೃಪ್ತಿಕರದಿಂದ ಅತ್ಯಂತ ಅತೃಪ್ತಿಕರದವರೆಗೆ ರೇಟ್ ಮಾಡಿ.", 
+    "Salary, benefits & employee facilities": "ಸಂಬಳ, ಪ್ರಯೋಜನಗಳು ಮತ್ತು ಸಿಬ್ಬಂದಿ ಸೌಲಭ್ಯಗಳು",
+    "e.g. PF, ESI / medical insurance, bonus" : "ಉದಾ. PF, ESI / ವೈದ್ಯಕೀಯ ವಿಮೆ, ಬೋನಸ್",
+    "Drinking water, washroom, changing/locker facility, rest area, canteen" : "ಕುಡಿಯುವ ನೀರು, ಶೌಚಾಲಯ, ಬಟ್ಟೆ ಬದಲಾಯಿಸುವ/ಲಾಕರ್ ಸೌಲಭ್ಯ, ವಿಶ್ರಾಂತಿ ಕೊಠಡಿ, ಕ್ಯಾಂಟೀನ್",
+    "Training, career growth & motivation" : "ತರಬೇತಿ, ವೃತ್ತಿ ಬೆಳವಣಿಗೆ ಮತ್ತು ಪ್ರೇರಣೆ",
+    "Low salary" : "ಕಡಿಮೆ ಸಂಬಳ", 
+    "Limited salary growth" : "ಸೀಮಿತ ವೇತನ ಹೆಚ್ಚಳ", 
+    "High workload" : "ಹೆಚ್ಚಿನ ಕೆಲಸದ ಹೊರೆ", 
+    "Long working hours" : "ದೀರ್ಘ ಕೆಲಸದ ಸಮಯ", 
+    "Lack of manpower" : "ಸಿಬ್ಬಂದಿ ಕೊರತೆ", 
+    "Limited career growth" : "ಸೀಮಿತ ವೃತ್ತಿ ಬೆಳವಣಿಗೆಯ ಅವಕಾಶಗಳು",
+    "Lack of training" : "ತರಬೇತಿಯ ಕೊರತೆ", 
+    "Lack of recognition" : "ಗುರುತಿಸುವಿಕೆಯ ಕೊರತೆ (ಮಾನ್ಯತೆ ಇಲ್ಲದಿರುವುದು)", 
+    "Incentive not attractive": "ಆಕರ್ಷಕವಲ್ಲದ ಪ್ರೋತ್ಸಾಹಕ (ಇನ್ಸೆಂಟಿವ್)", 
+    "Incentive calculation not clear/fair": "ಪ್ರೋತ್ಸಾಹಕ (ಇನ್ಸೆಂಟಿವ್) ಲೆಕ್ಕಾಚಾರ ಸ್ಪಷ್ಟವಾಗಿಲ್ಲ/ನ್ಯಾಯಯುತವಾಗಿಲ್ಲ",
+    "Management behaviour" : "ಮ್ಯಾನೇಜ್ಮೆಂಟ್ ನಡವಳಿಕೆ", 
+    "Supervisor behaviour" : "ಮೇಲ್ವಿಚಾರಕರ (ಸೂಪರ್‌ವೈಸರ್) ನಡವಳಿಕೆ", 
+    "Workshop facilities" : "ವರ್ಕ್‌ಶಾಪ್ ಸೌಲಭ್ಯಗಳು", 
+    "Lack of tools/equipment" : "ಉಪಕರಣಗಳ/ಸಾಧನಗಳ ಕೊರತೆ", 
+    "Lack of employee benefits": "ಸಿಬ್ಬಂದಿ ಪ್ರಯೋಜನಗಳ ಕೊರತೆ", 
+    "Leave-related issues": "ರಜೆಗೆ ಸಂಬಂಧಿಸಿದ ಸಮಸ್ಯೆಗಳು",
+    "Distance/travel to workplace": "ಕೆಲಸದ ಸ್ಥಳಕ್ಕೆ ದೂರ/ಪ್ರಯಾಣ", 
+    "Job security": "ಉದ್ಯೋಗ ಭದ್ರತೆ", 
+    "Other": "ಇತರೆ",
+    "Definitely continue": "ಖಂಡಿತವಾಗಿಯೂ ಮುಂದುವರೆಯುತ್ತೇನೆ", 
+    "Probably continue": "ಬಹುಶಃ ಮುಂದುವರೆಯುತ್ತೇನೆ", 
+    "Not sure": "ಖಚಿತವಾಗಿಲ್ಲ", 
+    "Probably leave": "ಬಹುಶಃ ಬಿಡುತ್ತೇನೆ", 
+    "Definitely leave": "ಖಂಡಿತವಾಗಿಯೂ ಬಿಡುತ್ತೇನೆ",
+    "Dealer code - Dealer name": "ಡೀಲರ್ ಕೋಡ್ - ಡೀಲರ್ ಹೆಸರು"
+  },
+te: {
+    "Next": "తదుపరి", 
+    "Back": "వెనుకకు", 
+    "Submit feedback": "అభిప్రాయాన్ని సమర్పించండి", 
+    "Select…": "ఎంచుకోండి…",
+    "Section": "విభాగం", 
+    "of": "లో",
+    "Staff profile": "సిబ్బంది ప్రొఫైల్", 
+    "About you and your workshop": "మీ గురించి మరియు మీ వర్క్‌షాప్ గురించి",
+    "Please enter your name and select your workshop details. Responses are used for survey analysis.": "దయచేసి మీ పేరును నమోదు చేయండి మరియు మీ వర్క్‌షాప్ వివరాలను ఎంచుకోండి. ప్రతిస్పందనలు సర్వే విశ్లేషణ కోసం ఉపయోగించబడతాయి.",
+    "Technician name": "టెక్నీషియన్ పేరు", 
+    "Age": "వయస్సు", 
+    "Circle / Region": "సర్కిల్ / ప్రాంతం", 
+    "Designation": "హోదా", 
+    "Highest qualification": "అత్యున్నత విద్యార్హత",
+    "How long have you worked at this dealership?": "మీరు ఈ డీలర్‌షిప్‌లో ఎంతకాలం పనిచేశారు?",
+    "Approximate monthly in-hand salary": "సుమారుగా నెలకు చేతికి అందే జీతం",
+    "Job satisfaction": "ఉద్యోగ సంతృప్తి", 
+    "Overall job satisfaction": "మొత్తం ఉద్యోగ సంతృప్తి",
+    "How satisfied are you with your current job at this dealership?": "ఈ డీలర్‌షిప్‌లో మీ ప్రస్తుత ఉద్యోగంతో మీరు ఎంత సంతృప్తి చెందారు?",
+    "How satisfied are you with your current salary in relation to your job responsibilities?": "మీ ఉద్యోగ బాధ్యతలకు సంబంధించి మీ ప్రస్తుత జీతంతో మీరు ఎంత సంతృప్తి చెందారు?",
+    "How satisfied are you with your current workload?": "మీ ప్రస్తుత పనిభారంతో మీరు ఎంత సంతృప్తి చెందారు?",
+    "Salary & facilities": "జీతం మరియు సౌకర్యాలు",
+    "How satisfied are you with the benefits provided by the dealership?": "డీలర్‌షిప్ అందించే ప్రయోజనాలతో మీరు ఎంత సంతృప్తి చెందారు?",
+    "How satisfied are you with the workshop's basic employee facilities?": "వర్క్‌షాప్ యొక్క ప్రాథమిక ఉద్యోగుల సౌకర్యాలతో మీరు ఎంత సంతృప్తి చెందారు?",
+    "Working environment & management": "పని వాతావరణం మరియు మేనేజ్‌మెంట్",
+    "Do you feel that you are treated with respect by the dealer management and workshop supervisors?": "డీలర్ మేనేజ్‌మెంట్ మరియు వర్క్‌షాప్ సూపర్‌వైజర్లు మిమ్మల్ని గౌరవంగా చూస్తున్నారని మీరు భావిస్తున్నారా?",
+    "How satisfied are you with the availability of required tools, equipment, PPE and working resources to perform your job effectively?": "మీ ఉద్యోగాన్ని సమర్థవంతంగా చేయడానికి అవసరమైన సాధనాలు, పరికరాలు, PPE మరియు పని వనరుల లభ్యతతో మీరు ఎంత సంతృప్తి చెందారు?",
+    "Training & growth": "శిక్షణ మరియు వృద్ధి",
+    "How satisfied are you with the technical training provided to improve your skills?": "మీ నైపుణ్యాలను మెరుగుపరచడానికి అందించిన సాంకేతిక శిక్షణతో మీరు ఎంత సంతృప్తి చెందారు?",
+    "How satisfied are you with the career growth opportunities available to you?": "మీకు అందుబాటులో ఉన్న కెరీర్ వృద్ధి అవకాశాలతో మీరు ఎంత సంతృప్తి చెందారు?",
+    "How satisfied are you with the incentive structure (i.e., additional pay over your salary based on achieving certain targets)?": "మీరు ఇన్సెంటివ్ నిర్మాణంతో (అంటే, నిర్దిష్ట లక్ష్యాలను సాధించడం ఆధారంగా మీ జీతంపై అదనపు చెల్లింపు) ఎంత సంతృప్తి చెందారు?",
+    "Key factors": "ముఖ్య కారకాలు", 
+    "What's affecting your satisfaction": "మీ సంతృప్తిని ఏది ప్రభావితం చేస్తోంది",
+    "What are the major factors affecting your satisfaction or motivation at work?": "పనిలో మీ సంతృప్తి లేదా ప్రేరణను ప్రభావితం చేసే ప్రధాన కారకాలు ఏమిటి?",
+    "Final assessment": "తుది అంచనా",
+    "If you receive a suitable opportunity, how likely are you to continue working with this dealership?": "మీకు తగిన అవకాశం లభిస్తే, మీరు ఈ డీలర్‌షిప్‌తో పని కొనసాగించే అవకాశం ఎంత ఉంది?",
+    "What is one thing the dealership should improve to make your work experience better?": "మీ పని అనుభవాన్ని మెరుగుపరచడానికి డీలర్‌షిప్ మెరుగుపరచాల్సిన ఒక విషయం ఏమిటి?",
+    "Very Satisfied": "చాలా సంతృప్తి చెందాను", 
+    "Satisfied": "సంతృప్తి చెందాను", 
+    "Neutral": "తటస్థం", 
+    "Dissatisfied": "అసంతృప్తి చెందాను", 
+    "Very Dissatisfied": "చాలా అసంతృప్తి చెందాను", 
+    "Always": "ఎల్లప్పుడూ", 
+    "Usually": "సాధారణంగా", 
+    "Sometimes": "కొన్నిసార్లు", 
+    "Rarely": "అరుదుగా", 
+    "Never": "ఎన్నడూ లేదు",
+    "Enter your full name" : "మీ పూర్తి పేరును నమోదు చేయండి", 
+    "Dealer Code - Dealer Name" : "డీలర్ కోడ్ - డీలర్ పేరు", 
+    "ASM" : "ఏరియా సర్వీస్ మేనేజర్ (ASM)", 
+    "Rate each area from Very Satisfied to Very Dissatisfied.": "ప్రతి విభాగాన్ని చాలా సంతృప్తి నుండి చాలా అసంతృప్తి వరకు రేట్ చేయండి.", 
+    "Salary, benefits & employee facilities": "జీతం, ప్రయోజనాలు మరియు ఉద్యోగుల సౌకర్యాలు",
+    "e.g. PF, ESI / medical insurance, bonus" : "ఉదా. PF, ESI / వైద్య బీమా, బోనస్",
+    "Drinking water, washroom, changing/locker facility, rest area, canteen" : "తాగునీరు, వాష్‌రూమ్, బట్టలు మార్చుకునే/లాకర్ సౌకర్యం, విశ్రాంతి ప్రాంతం, క్యాంటీన్",
+    "Training, career growth & motivation" : "శిక్షణ, కెరీర్ వృద్ధి మరియు ప్రేరణ",
+    "Low salary" : "తక్కువ జీతం", 
+    "Limited salary growth" : "పరిమిత జీతం వృద్ధి", 
+    "High workload" : "అధిక పనిభారం", 
+    "Long working hours" : "ఎక్కువ పని గంటలు", 
+    "Lack of manpower" : "సిబ్బంది కొరత", 
+    "Limited career growth" : "పరిమిత కెరీర్ వృద్ధి అవకాశాలు",
+    "Lack of training" : "శిక్షణ లేకపోవడం", 
+    "Lack of recognition" : "గుర్తింపు లేకపోవడం", 
+    "Incentive not attractive": "ఆకర్షణీయంగా లేని ఇన్సెంటివ్", 
+    "Incentive calculation not clear/fair": "ఇన్సెంటివ్ లెక్కింపు స్పష్టంగా/న్యాయంగా లేదు",
+    "Management behaviour" : "మేనేజ్‌మెంట్ ప్రవర్తన", 
+    "Supervisor behaviour" : "సూపర్‌వైజర్ ప్రవర్తన", 
+    "Workshop facilities" : "వర్క్‌షాప్ సౌకర్యాలు", 
+    "Lack of tools/equipment" : "పనిముట్లు/పరికరాల కొరత", 
+    "Lack of employee benefits": "ఉద్యోగుల ప్రయోజనాల కొరత", 
+    "Leave-related issues": "సెలవు సంబంధిత సమస్యలు",
+    "Distance/travel to workplace": "కార్యాలయానికి దూరం/ప్రయాణం", 
+    "Job security": "ఉద్యోగ భద్రత", 
+    "Other": "ఇతర",
+    "Definitely continue": "ఖచ్చితంగా కొనసాగుతాను", 
+    "Probably continue": "బహుశా కొనసాగుతాను", 
+    "Not sure": "ఖచ్చితంగా తెలియదు", 
+    "Probably leave": "బహుశా మానేస్తాను", 
+    "Definitely leave": "ఖచ్చితంగా మానేస్తాను",
+    "Dealer code - Dealer name": "డీలర్ కోడ్ - డీలర్ పేరు"
+  },
+ta: {
+    "Next": "அடுத்து", 
+    "Back": "பின்னால்", 
+    "Submit feedback": "பதிலைச் சமர்ப்பிக்கவும்", 
+    "Select…": "தேர்வு செய்யவும்…",
+    "Section": "பகுதி", 
+    "of": "இல்",
+    "Staff profile": "பணியாளர் விவரம்", 
+    "About you and your workshop": "உங்களைப் பற்றியும் உங்கள் வொர்க்‌ஷாப் பற்றியும்",
+    "Please enter your name and select your workshop details. Responses are used for survey analysis.": "தயவுசெய்து உங்கள் பெயரை உள்ளிட்டு, உங்கள் வொர்க்‌ஷாப் விவரங்களைத் தேர்ந்தெடுக்கவும். பதில்கள் கணக்கெடுப்பு பகுப்பாய்வுக்கு பயன்படுத்தப்படும்.",
+    "Technician name": "டெக்னீஷியன் பெயர்", 
+    "Age": "வயது", 
+    "Circle / Region": "மண்டலம் / பகுதி", 
+    "Designation": "பதவி", 
+    "Highest qualification": "உயர்ந்தபட்ச கல்வித்தகுதி",
+    "How long have you worked at this dealership?": "இந்த டீலர்ஷிப்பில் நீங்கள் எவ்வளவு காலமாக வேலை செய்கிறீர்கள்?",
+    "Approximate monthly in-hand salary": "தோராயமான மாதாந்திர நிகர சம்பளம்",
+    "Job satisfaction": "வேலை திருப்தி", 
+    "Overall job satisfaction": "ஒட்டுமொத்த வேலை திருப்தி",
+    "How satisfied are you with your current job at this dealership?": "இந்த டீலர்ஷிப்பில் உங்கள் தற்போதைய வேலையில் நீங்கள் எவ்வளவு திருப்தி அடைகிறீர்கள்?",
+    "How satisfied are you with your current salary in relation to your job responsibilities?": "உங்கள் வேலைப் பொறுப்புகளுக்கு ஏற்ப உங்கள் தற்போதைய சம்பளத்தில் நீங்கள் எவ்வளவு திருப்தி அடைகிறீர்கள்?",
+    "How satisfied are you with your current workload?": "உங்கள் தற்போதைய வேலைப்பளுவில் நீங்கள் எவ்வளவு திருப்தி அடைகிறீர்கள்?",
+    "Salary & facilities": "சம்பளம் மற்றும் வசதிகள்",
+    "How satisfied are you with the benefits provided by the dealership?": "டீலர்ஷிப் வழங்கும் சலுகைகளில் நீங்கள் எவ்வளவு திருப்தி அடைகிறீர்கள்?",
+    "How satisfied are you with the workshop's basic employee facilities?": "வொர்க்‌ஷாப்பின் அடிப்படை பணியாளர் வசதிகளில் நீங்கள் எவ்வளவு திருப்தி அடைகிறீர்கள்?",
+    "Working environment & management": "பணிச்சூழல் மற்றும் நிர்வாகம்",
+    "Do you feel that you are treated with respect by the dealer management and workshop supervisors?": "டீலர் நிர்வாகம் மற்றும் வொர்க்‌ஷாப் சூப்பர்வைசர்களால் நீங்கள் மரியாதையுடன் நடத்தப்படுவதாக உணர்கிறீர்களா?",
+    "How satisfied are you with the availability of required tools, equipment, PPE and working resources to perform your job effectively?": "உங்கள் வேலையை திறம்படச் செய்வதற்குத் தேவையான கருவிகள், உபகரணங்கள், PPE மற்றும் பணி ஆதாரங்கள் கிடைப்பதில் நீங்கள் எவ்வளவு திருப்தி அடைகிறீர்கள்?",
+    "Training & growth": "பயிற்சி மற்றும் வளர்ச்சி",
+    "How satisfied are you with the technical training provided to improve your skills?": "உங்கள் திறன்களை மேம்படுத்துவதற்காக வழங்கப்படும் தொழில்நுட்ப பயிற்சியில் நீங்கள் எவ்வளவு திருப்தி அடைகிறீர்கள்?",
+    "How satisfied are you with the career growth opportunities available to you?": "உங்களுக்கு கிடைக்கும் தொழில் வளர்ச்சி வாய்ப்புகளில் நீங்கள் எவ்வளவு திருப்தி அடைகிறீர்கள்?",
+    "How satisfied are you with the incentive structure (i.e., additional pay over your salary based on achieving certain targets)?": "இன்சென்டிவ் முறையில் (அதாவது குறிப்பிட்ட இலக்குகளை அடைவதன் அடிப்படையில் உங்கள் சம்பளத்திற்கு மேல் கிடைக்கும் கூடுதல் ஊதியம்) நீங்கள் எவ்வளவு திருப்தி அடைகிறீர்கள்?",
+    "Key factors": "முக்கிய காரணிகள்", 
+    "What's affecting your satisfaction": "உங்கள் திருப்தியைப் பாதிப்பது எது",
+    "What are the major factors affecting your satisfaction or motivation at work?": "வேலையில் உங்கள் திருப்தி அல்லது ஊக்கத்தை பாதிக்கும் முக்கிய காரணிகள் யாவை?",
+    "Final assessment": "இறுதி மதிப்பீடு",
+    "If you receive a suitable opportunity, how likely are you to continue working with this dealership?": "உங்களுக்கு தகுந்த வாய்ப்பு கிடைத்தால், இந்த டீலர்ஷிப்பில் நீங்கள் தொடர்ந்து பணியாற்ற எவ்வளவு வாய்ப்புள்ளது?",
+    "What is one thing the dealership should improve to make your work experience better?": "உங்கள் பணி அனுபவத்தை சிறப்பாக்க, டீலர்ஷிப் மேம்படுத்த வேண்டிய ஒரு விஷயம் என்ன?",
+    "Very Satisfied": "மிகவும் திருப்தி", 
+    "Satisfied": "திருப்தி", 
+    "Neutral": "நடுநிலை", 
+    "Dissatisfied": "திருப்தியற்றது", 
+    "Very Dissatisfied": "மிகவும் திருப்தியற்றது", 
+    "Always": "எப்போதும்", 
+    "Usually": "வழக்கமாக", 
+    "Sometimes": "சில நேரங்களில்", 
+    "Rarely": "அரிதாக", 
+    "Never": "ஒருபோதும் இல்லை",
+    "Enter your full name" : "உங்கள் முழு பெயரை உள்ளிடவும்", 
+    "Dealer Code - Dealer Name" : "டீலர் குறியீடு - டீலர் பெயர்", 
+    "ASM" : "ஏரியா சர்வீஸ் மேனேஜர் (ASM)", 
+    "Rate each area from Very Satisfied to Very Dissatisfied.": "ஒவ்வொரு பகுதியையும் 'மிகவும் திருப்தி' முதல் 'மிகவும் திருப்தியற்றது' வரை மதிப்பிடவும்.", 
+    "Salary, benefits & employee facilities": "சம்பளம், சலுகைகள் மற்றும் பணியாளர் வசதிகள்",
+    "e.g. PF, ESI / medical insurance, bonus" : "உதா. PF, ESI / மருத்துவ காப்பீடு, போனஸ்",
+    "Drinking water, washroom, changing/locker facility, rest area, canteen" : "குடிநீர், கழிவறை, உடை மாற்றும்/லாக்கர் வசதி, ஓய்வறை, கேன்டீன்",
+    "Training, career growth & motivation" : "பயிற்சி, தொழில் வளர்ச்சி மற்றும் ஊக்கம்",
+    "Low salary" : "குறைந்த சம்பளம்", 
+    "Limited salary growth" : "குறைந்த சம்பள உயர்வு", 
+    "High workload" : "அதிக வேலைப்பளு", 
+    "Long working hours" : "நீண்ட வேலை நேரம்", 
+    "Lack of manpower" : "பணியாளர் பற்றாக்குறை", 
+    "Limited career growth" : "குறைந்த தொழில் வளர்ச்சி",
+    "Lack of training" : "பயிற்சி இல்லாமை", 
+    "Lack of recognition" : "அங்கீகாரம் இல்லாமை", 
+    "Incentive not attractive": "இன்சென்டிவ் கவரக்கூடியதாக இல்லை", 
+    "Incentive calculation not clear/fair": "இன்சென்டிவ் கணக்கீடு தெளிவாக/சரியாக இல்லை",
+    "Management behaviour" : "நிர்வாகத்தின் நடத்தை", 
+    "Supervisor behaviour" : "சூப்பர்வைசரின் நடத்தை", 
+    "Workshop facilities" : "வொர்க்‌ஷாப் வசதிகள்", 
+    "Lack of tools/equipment" : "கருவிகள்/உபகரணங்கள் பற்றாக்குறை", 
+    "Lack of employee benefits": "பணியாளர் சலுகைகள் இல்லாமை", 
+    "Leave-related issues": "விடுப்பு தொடர்பான பிரச்சனைகள்",
+    "Distance/travel to workplace": "பணிபுரியும் இடத்திற்கு தூரம்/பயணம்", 
+    "Job security": "வேலை பாதுகாப்பு", 
+    "Other": "மற்றவை",
+    "Definitely continue": "நிச்சயமாக தொடருவேன்", 
+    "Probably continue": "பெரும்பாலும் தொடருவேன்", 
+    "Not sure": "உறுதியாக தெரியவில்லை", 
+    "Probably leave": "பெரும்பாலும் விலகிவிடுவேன்", 
+    "Definitely leave": "நிச்சயமாக விலகிவிடுவேன்",
+    "Dealer code - Dealer name": "விற்பனையாளர் குறியீடு - விற்பனையாளர் பெயர்"
+  },
+  ml: {
+    "Next": "അടുത്തത്", 
+    "Back": "പുറകോട്ട്", 
+    "Submit feedback": "പ്രതികരണം സമർപ്പിക്കുക", 
+    "Select…": "തിരഞ്ഞെടുക്കുക…",
+    "Section": "ഭാഗം", 
+    "of": "ൽ",
+    "Staff profile": "ജീവനക്കാരുടെ പ്രൊഫൈൽ", 
+    "About you and your workshop": "നിങ്ങളെയും നിങ്ങളുടെ വർക്ക്ഷോപ്പിനെയും കുറിച്ച്",
+    "Please enter your name and select your workshop details. Responses are used for survey analysis.": "ദയവായി നിങ്ങളുടെ പേര് നൽകി വർക്ക്ഷോപ്പ് വിവരങ്ങൾ തിരഞ്ഞെടുക്കുക. പ്രതികരണങ്ങൾ സർവേ വിശകലനത്തിനായി ഉപയോഗിക്കും.",
+    "Technician name": "ടെക്നീഷ്യന്റെ പേര്", 
+    "Age": "പ്രായം", 
+    "Circle / Region": "സർക്കിൾ / റീജിയൺ", 
+    "Designation": "തസ്തിക", 
+    "Highest qualification": "ഉയർന്ന വിദ്യാഭ്യാസ യോഗ്യത",
+    "How long have you worked at this dealership?": "ഈ ഡീലർഷിപ്പിൽ നിങ്ങൾ എത്ര കാലമായി ജോലി ചെയ്യുന്നു?",
+    "Approximate monthly in-hand salary": "ഏകദേശ പ്രതിമാസ ശമ്പളം",
+    "Job satisfaction": "തൊഴിൽ സംതൃപ്തി", 
+    "Overall job satisfaction": "മൊത്തത്തിലുള്ള തൊഴിൽ സംതൃപ്തി",
+    "How satisfied are you with your current job at this dealership?": "ഈ ഡീലർഷിപ്പിലെ നിങ്ങളുടെ നിലവിലെ ജോലിയിൽ നിങ്ങൾ എത്രത്തോളം സംതൃപ്തനാണ്?",
+    "How satisfied are you with your current salary in relation to your job responsibilities?": "നിങ്ങളുടെ ജോലിയിലെ ഉത്തരവാദിത്തങ്ങളുമായി താരതമ്യം ചെയ്യുമ്പോൾ നിലവിലെ ശമ്പളത്തിൽ നിങ്ങൾ എത്രത്തോളം സംതൃപ്തനാണ്?",
+    "How satisfied are you with your current workload?": "നിങ്ങളുടെ നിലവിലെ ജോലിഭാരത്തിൽ നിങ്ങൾ എത്രത്തോളം സംതൃപ്തനാണ്?",
+    "Salary & facilities": "ശമ്പളവും സൗകര്യങ്ങളും",
+    "How satisfied are you with the benefits provided by the dealership?": "ഡീലർഷിപ്പ് നൽകുന്ന ആനുകൂല്യങ്ങളിൽ നിങ്ങൾ എത്രത്തോളം സംതൃപ്തനാണ്?",
+    "How satisfied are you with the workshop's basic employee facilities?": "വർക്ക്ഷോപ്പിലെ അടിസ്ഥാന ജീവനക്കാരുടെ സൗകര്യങ്ങളിൽ നിങ്ങൾ എത്രത്തോളം സംതൃപ്തനാണ്?",
+    "Working environment & management": "തൊഴിൽ സാഹചര്യവും മാനേജ്മെന്റും",
+    "Do you feel that you are treated with respect by the dealer management and workshop supervisors?": "ഡീലർ മാനേജ്മെന്റും വർക്ക്ഷോപ്പ് സൂപ്പർവൈസർമാരും നിങ്ങളോട് ബഹുമാനത്തോടെയാണോ പെരുമാറുന്നത്?",
+    "How satisfied are you with the availability of required tools, equipment, PPE and working resources to perform your job effectively?": "നിങ്ങളുടെ ജോലി കാര്യക്ഷമമായി ചെയ്യുന്നതിന് ആവശ്യമായ ടൂളുകൾ, ഉപകരണങ്ങൾ, PPE, എന്നിവയുടെ ലഭ്യതയിൽ നിങ്ങൾ എത്രത്തോളം സംതൃപ്തനാണ്?",
+    "Training & growth": "പരിശീലനവും വളർച്ചയും",
+    "How satisfied are you with the technical training provided to improve your skills?": "നിങ്ങളുടെ കഴിവുകൾ മെച്ചപ്പെടുത്തുന്നതിനായി നൽകുന്ന സാങ്കേതിക പരിശീലനത്തിൽ നിങ്ങൾ എത്രത്തോളം സംതൃപ്തനാണ്?",
+    "How satisfied are you with the career growth opportunities available to you?": "നിങ്ങൾക്ക് ലഭിക്കുന്ന തൊഴിൽ വളർച്ചാ അവസരങ്ങളിൽ നിങ്ങൾ എത്രത്തോളം സംതൃപ്തനാണ്?",
+    "How satisfied are you with the incentive structure (i.e., additional pay over your salary based on achieving certain targets)?": "ഇൻസെന്റീവ് വ്യവസ്ഥയിൽ (ചില ലക്ഷ്യങ്ങൾ നേടുന്നതിന്റെ അടിസ്ഥാനത്തിൽ ശമ്പളത്തിന് പുറമെ നൽകുന്ന അധിക തുക) നിങ്ങൾ എത്രത്തോളം സംതൃപ്തനാണ്?",
+    "Key factors": "പ്രധാന ഘടകങ്ങൾ", 
+    "What's affecting your satisfaction": "നിങ്ങളുടെ സംതൃപ്തിയെ ബാധിക്കുന്നത് എന്താണ്",
+    "What are the major factors affecting your satisfaction or motivation at work?": "ജോലിയിൽ നിങ്ങളുടെ സംതൃപ്തിയെയോ പ്രചോദനത്തെയോ ബാധിക്കുന്ന പ്രധാന ഘടകങ്ങൾ എന്തൊക്കെയാണ്?",
+    "Final assessment": "അവസാന വിലയിരുത്തൽ",
+    "If you receive a suitable opportunity, how likely are you to continue working with this dealership?": "നിങ്ങൾക്ക് അനുയോജ്യമായ ഒരു അവസരം ലഭിച്ചാൽ, ഈ ഡീലർഷിപ്പിൽ തുടർന്നും ജോലി ചെയ്യാൻ എത്രത്തോളം സാധ്യതയുണ്ട്?",
+    "What is one thing the dealership should improve to make your work experience better?": "നിങ്ങളുടെ തൊഴിൽ അനുഭവം മികച്ചതാക്കാൻ ഡീലർഷിപ്പ് മെച്ചപ്പെടുത്തേണ്ട ഒരു കാര്യം എന്താണ്?",
+    "Very Satisfied": "വളരെ സംതൃപ്തൻ", 
+    "Satisfied": "സംതൃപ്തൻ", 
+    "Neutral": "സാധാരണ", 
+    "Dissatisfied": "അസംതൃപ്തൻ", 
+    "Very Dissatisfied": "വളരെ അസംതൃപ്തൻ", 
+    "Always": "എല്ലായ്പ്പോഴും", 
+    "Usually": "സാധാരണയായി", 
+    "Sometimes": "ചിലപ്പോൾ", 
+    "Rarely": "അപൂർവ്വമായി", 
+    "Never": "ഒരിക്കലുമില്ല",
+    "Enter your full name" : "നിങ്ങളുടെ പൂർണ്ണനാമം നൽകുക", 
+    "Dealer Code - Dealer Name" : "ഡീലർ കോഡ് - ഡീലറുടെ പേര്", 
+    "ASM" : "ഏരിയ സർവീസ് മാനേജർ (ASM)", 
+    "Rate each area from Very Satisfied to Very Dissatisfied.": "ഓരോ വിഭാഗവും 'വളരെ സംതൃപ്തൻ' മുതൽ 'വളരെ അസംതൃപ്തൻ' വരെ വിലയിരുത്തുക.", 
+    "Salary, benefits & employee facilities": "ശമ്പളം, ആനുകൂല്യങ്ങൾ, ജീവനക്കാർക്കുള്ള സൗകര്യങ്ങൾ",
+    "e.g. PF, ESI / medical insurance, bonus" : "ഉദാ. PF, ESI / മെഡിക്കൽ ഇൻഷുറൻസ്, ബോണസ്",
+    "Drinking water, washroom, changing/locker facility, rest area, canteen" : "കുടിവെള്ളം, വാഷ്റൂം, വസ്ത്രം മാറാനുള്ള/ലോക്കർ സൗകര്യം, വിശ്രമ സ്ഥലം, കാന്റീൻ",
+    "Training, career growth & motivation" : "പരിശീലനം, തൊഴിൽ വളർച്ച, പ്രചോദനം",
+    "Low salary" : "കുറഞ്ഞ ശമ്പളം", 
+    "Limited salary growth" : "പരിമിതമായ ശമ്പള വർദ്ധനവ്", 
+    "High workload" : "അമിതമായ ജോലിഭാരം", 
+    "Long working hours" : "നീണ്ട ജോലി സമയം", 
+    "Lack of manpower" : "ജീവനക്കാരുടെ കുറവ്", 
+    "Limited career growth" : "തൊഴിൽ വളർച്ചയ്ക്കുള്ള കുറഞ്ഞ അവസരങ്ങൾ",
+    "Lack of training" : "പരിശീലനത്തിന്റെ കുറവ്", 
+    "Lack of recognition" : "അംഗീകാരമില്ലായ്മ", 
+    "Incentive not attractive": "ആകർഷകമല്ലാത്ത ഇൻസെന്റീവ്", 
+    "Incentive calculation not clear/fair": "ഇൻസെന്റീവ് കണക്കാക്കുന്നത് വ്യക്തമല്ല/ന്യായമല്ല",
+    "Management behaviour" : "മാനേജ്മെന്റിന്റെ പെരുമാറ്റം", 
+    "Supervisor behaviour" : "സൂപ്പർവൈസറുടെ പെരുമാറ്റം", 
+    "Workshop facilities" : "വർക്ക്ഷോപ്പിലെ സൗകര്യങ്ങൾ", 
+    "Lack of tools/equipment" : "ടൂളുകളുടെ/ഉപകരണങ്ങളുടെ കുറവ്", 
+    "Lack of employee benefits": "ജീവനക്കാർക്കുള്ള ആനുകൂല്യങ്ങളുടെ കുറവ്", 
+    "Leave-related issues": "അവധിയുമായി ബന്ധപ്പെട്ട പ്രശ്നങ്ങൾ",
+    "Distance/travel to workplace": "ജോലിസ്ഥലത്തേക്കുള്ള ദൂരം/യാത്ര", 
+    "Job security": "തൊഴിൽ സുരക്ഷ", 
+    "Other": "മറ്റുള്ളവ",
+    "Definitely continue": "തീർച്ചയായും തുടരും", 
+    "Probably continue": "തുടരാൻ സാധ്യതയുണ്ട്", 
+    "Not sure": "ഉറപ്പില്ല", 
+    "Probably leave": "ജോലി വിടാൻ സാധ്യതയുണ്ട്", 
+    "Definitely leave": "തീർച്ചയായും ജോലി വിടും",
+    "Dealer code - Dealer name": "ഡീലർ കോഡ് - ഡീലറുടെ പേര്"
+  }
+};
+
+// Translation Helper Function
+function t(str) {
+  if (!state.lang || state.lang === "en") return str;
+  return (I18N[state.lang] && I18N[state.lang][str]) ? I18N[state.lang][str] : str;
+}
+
 let enteredCode = "";
 const REGIONS = ["North","Central","East","West","South KAT","South TK"];
 const DESIGNATIONS = ["Technician","Senior Technician","Diagnostic Technician","Service Advisor","Team Leader / Workshop Supervisor","Works Manager","Other"];
@@ -942,7 +1333,12 @@ const STEPS = [
 
 const CATEGORIES = ["Salary & Benefits","Workshop Facilities","Workplace Environment","Management","Training & Career Growth","Reward & Recognition","Overall Satisfaction"];
 
-let state = { step:0, answers:{}, view:"form" };
+let state = { 
+  step: 0, 
+  answers: {}, 
+  view: "form",
+  lang: null // Will prompt the language selector on load
+};
 
 function scaleScore(scaleArr, value){
   const idx = scaleArr.indexOf(value);
@@ -965,23 +1361,54 @@ function stepValid(step){
 function render(){
   const app = document.getElementById("app");
   
-  // --> ADD THIS BLOCK to block repeat visitors
-  if(localStorage.getItem('pb_survey_submitted') === 'true' && state.view !== "results") {
+  // Update: Added '&& state.view !== "thanks"' so the thank you screen isn't blocked immediately after submission
+  if(localStorage.getItem('pb_survey_submitted') === 'true' && state.view !== "results" && state.view !== "thanks") {
     app.innerHTML = "";
     app.appendChild(renderHeader());
     const blockMsg = document.createElement("div");
     blockMsg.className = "card empty";
-    blockMsg.innerHTML = "<h3>Already Submitted</h3><p>Our records indicate a response has already been submitted from this device. To maintain data integrity, multiple submissions are not allowed.</p>";
+    blockMsg.innerHTML = "<h3>Already Submitted</h3><p>Our records indicate a response has already been submitted from this device.</p>";
     app.appendChild(blockMsg);
     return;
   }
   
   if(state.view === "results"){ app.innerHTML = ""; app.appendChild(renderResults()); return; }
   if(state.view === "thanks"){ app.innerHTML = ""; app.appendChild(renderThanks()); return; }
+  
   app.innerHTML = "";
   app.appendChild(renderHeader());
+
+  // Show Language Selector if not chosen
+  if(!state.lang) {
+    app.appendChild(renderLanguageSelector());
+    return;
+  }
+
   if(state.step === 0) app.appendChild(renderHero());
   app.appendChild(renderCard());
+}
+
+function renderLanguageSelector() {
+  const card = document.createElement("div");
+  card.className = "card";
+  card.innerHTML = `<h2 class="step-title" style="text-align:center; margin-bottom:20px;">Choose your language</h2>`;
+  
+  const grid = document.createElement("div");
+  grid.style.display = "flex"; grid.style.flexDirection = "column"; grid.style.gap = "10px";
+  
+  LANGUAGES.forEach(lang => {
+    const btn = document.createElement("button");
+    btn.className = "btn secondary";
+    btn.textContent = lang.label;
+    btn.onclick = () => {
+      state.lang = lang.code;
+      render();
+    };
+    grid.appendChild(btn);
+  });
+  
+  card.appendChild(grid);
+  return card;
 }
 
 function renderHeader(){
@@ -1008,6 +1435,115 @@ function renderHero(){
   return d;
 }
 
+function renderField(f){
+  const wrap = document.createElement("div");
+  wrap.className = "field";
+
+  const label = document.createElement("label");
+  label.className = "qlabel";
+  label.textContent = t(f.label);
+  wrap.appendChild(label);
+
+  if(f.hint){
+    const hint = document.createElement("div");
+    hint.className = "hint";
+    hint.textContent = t(f.hint);
+    wrap.appendChild(hint);
+  }
+
+  if(f.type === "select"){
+    const sel = document.createElement("select");
+
+    let options = f.options || [];
+    if(f.id === "asm"){
+      const region = state.answers.region || "";
+      options = region && DEALER_MAPPING[region] ? Object.keys(DEALER_MAPPING[region]) : [];
+    } else if(f.id === "dealer"){
+      const region = state.answers.region || "";
+      const asm = state.answers.asm || "";
+      options = (region && asm && DEALER_MAPPING[region] && DEALER_MAPPING[region][asm])
+        ? DEALER_MAPPING[region][asm]
+        : [];
+    }
+
+    sel.innerHTML = `<option value="">${t('Select…')}</option>` +
+      options.map(o=>`<option value="${o}" ${state.answers[f.id]===o?"selected":""}>${t(o)}</option>`).join("");
+
+    sel.onchange = (e)=>{
+      state.answers[f.id] = e.target.value;
+      if(f.id === "region"){
+        state.answers.asm = "";
+        state.answers.dealer = "";
+      } else if(f.id === "asm"){
+        state.answers.dealer = "";
+      }
+      render();
+    };
+
+    sel.disabled = (f.id === "asm" && !state.answers.region) ||
+                   (f.id === "dealer" && (!state.answers.region || !state.answers.asm));
+    wrap.appendChild(sel);
+  }
+
+  if(f.type === "text"){
+    const ta = document.createElement("textarea");
+    ta.value = state.answers[f.id] || "";
+    ta.placeholder = f.placeholder ? t(f.placeholder) : "";
+    ta.oninput = (e)=>{ state.answers[f.id] = e.target.value; };
+    wrap.appendChild(ta);
+  }
+
+  if(f.type === "scale"){
+    const box = document.createElement("div");
+    box.className = "scale5";
+    f.scale.forEach((opt)=>{
+      const row = document.createElement("label");
+      row.className = "opt" + (state.answers[f.id]===opt ? " selected" : "");
+      row.innerHTML = `<input type="radio" name="${f.id}" ${state.answers[f.id]===opt?"checked":""}/><span>${t(opt)}</span>`;
+      row.querySelector("input").onchange = ()=>{ state.answers[f.id] = opt; render(); };
+      box.appendChild(row);
+    });
+    wrap.appendChild(box);
+  }
+
+  if(f.type === "multiselect"){
+    const box = document.createElement("div");
+    box.className = "ms-grid";
+    const chosen = state.answers[f.id] || [];
+    f.options.forEach(opt=>{
+      const chip = document.createElement("div");
+      chip.className = "chip" + (chosen.includes(opt) ? " selected" : "");
+      chip.textContent = t(opt);
+      chip.onclick = ()=>{
+        let cur = state.answers[f.id] || [];
+        if(cur.includes(opt)){
+          cur = cur.filter(x=>x!==opt);
+        } else {
+          if(cur.length >= f.max) return;
+          cur = [...cur, opt];
+        }
+        state.answers[f.id] = cur;
+        render();
+      };
+      box.appendChild(chip);
+    });
+    wrap.appendChild(box);
+  }
+
+  return wrap;
+}
+
+function renderThanks(){
+const d = document.createElement("div");
+  d.className = "card thanks";
+  d.innerHTML = `
+    <div class="mark">&#10003;</div>
+    <h2>Feedback Submitted Thanks</h2>
+    <p>Your response has been securely added to the dealership's results.</p>
+  `;
+  return d;
+}
+
 function renderCard(){
   const step = STEPS[state.step];
   const card = document.createElement("div");
@@ -1027,18 +1563,18 @@ function renderCard(){
 
   const lbl = document.createElement("div");
   lbl.className = "step-label";
-  lbl.textContent = `Section ${state.step+1} of ${STEPS.length} \u2014 ${step.label}`;
+  lbl.textContent = `${t('Section')} ${state.step+1} ${t('of')} ${STEPS.length} \u2014 ${t(step.label)}`;
   card.appendChild(lbl);
 
   const title = document.createElement("h2");
   title.className = "step-title";
-  title.textContent = step.title;
+  title.textContent = t(step.title);
   card.appendChild(title);
 
   if(step.sub){
     const sub = document.createElement("p");
     sub.className = "step-sub";
-    sub.textContent = step.sub;
+    sub.textContent = t(step.sub);
     card.appendChild(sub);
   } else {
     const spacer = document.createElement("div");
@@ -1055,9 +1591,10 @@ function renderCard(){
 
   const nav = document.createElement("div");
   nav.className = "nav-row";
+  
   const back = document.createElement("button");
   back.className = "btn secondary";
-  back.textContent = "Back";
+  back.textContent = t("Back");
   back.disabled = state.step === 0;
   back.onclick = () => { state.step = Math.max(0, state.step-1); render(); };
   nav.appendChild(back);
@@ -1065,10 +1602,10 @@ function renderCard(){
   const next = document.createElement("button");
   next.className = "btn";
   next.id = "nextBtn";
-  next.textContent = state.step === STEPS.length-1 ? "Submit feedback" : "Next";
+  next.textContent = state.step === STEPS.length-1 ? t("Submit feedback") : t("Next");
   next.onclick = () => {
     if(!stepValid(step)){
-      document.getElementById("errBox").textContent = "Please answer every question in this section before continuing.";
+      document.getElementById("errBox").textContent = "Please answer every question.";
       return;
     }
     if(state.step === STEPS.length-1){ submitResponse(); return; }
@@ -1079,121 +1616,6 @@ function renderCard(){
   card.appendChild(nav);
 
   return card;
-}
-
-function renderField(f){
-  const wrap = document.createElement("div");
-  wrap.className = "field";
-
-  const label = document.createElement("label");
-  label.className = "qlabel";
-  label.textContent = f.label;
-  wrap.appendChild(label);
-
-  if(f.hint){
-    const hint = document.createElement("div");
-    hint.className = "hint";
-    hint.textContent = f.hint;
-    wrap.appendChild(hint);
-  }
-
-  if(f.type === "select"){
-    const sel = document.createElement("select");
-
-    let options = f.options || [];
-    if(f.id === "asm"){
-      const region = state.answers.region || "";
-      options = region && DEALER_MAPPING[region] ? Object.keys(DEALER_MAPPING[region]) : [];
-    } else if(f.id === "dealer"){
-      const region = state.answers.region || "";
-      const asm = state.answers.asm || "";
-      options = (region && asm && DEALER_MAPPING[region] && DEALER_MAPPING[region][asm])
-        ? DEALER_MAPPING[region][asm]
-        : [];
-    }
-
-    sel.innerHTML = `<option value="">Select&hellip;</option>` +
-      options.map(o=>`<option value="${o}" ${state.answers[f.id]===o?"selected":""}>${o}</option>`).join("");
-
-    sel.onchange = (e)=>{
-      state.answers[f.id] = e.target.value;
-
-      // Cascade: Circle/Region -> ASM -> Dealer
-      if(f.id === "region"){
-        state.answers.asm = "";
-        state.answers.dealer = "";
-      } else if(f.id === "asm"){
-        state.answers.dealer = "";
-      }
-      render();
-    };
-
-    sel.disabled = (f.id === "asm" && !state.answers.region) ||
-                   (f.id === "dealer" && (!state.answers.region || !state.answers.asm));
-    wrap.appendChild(sel);
-  }
-
-  if(f.type === "text"){
-    const ta = document.createElement("textarea");
-    ta.value = state.answers[f.id] || "";
-    ta.placeholder = f.placeholder || "";
-    ta.oninput = (e)=>{ state.answers[f.id] = e.target.value; };
-    wrap.appendChild(ta);
-  }
-
-  if(f.type === "scale"){
-    const box = document.createElement("div");
-    box.className = "scale5";
-    f.scale.forEach((opt)=>{
-      const row = document.createElement("label");
-      row.className = "opt" + (state.answers[f.id]===opt ? " selected" : "");
-      row.innerHTML = `<input type="radio" name="${f.id}" ${state.answers[f.id]===opt?"checked":""}/><span>${opt}</span>`;
-      row.querySelector("input").onchange = ()=>{ state.answers[f.id] = opt; render(); };
-      box.appendChild(row);
-    });
-    wrap.appendChild(box);
-  }
-
-  if(f.type === "multiselect"){
-    const box = document.createElement("div");
-    box.className = "ms-grid";
-    const chosen = state.answers[f.id] || [];
-    f.options.forEach(opt=>{
-      const chip = document.createElement("div");
-      chip.className = "chip" + (chosen.includes(opt) ? " selected" : "");
-      chip.textContent = opt;
-      chip.onclick = ()=>{
-        let cur = state.answers[f.id] || [];
-        if(cur.includes(opt)){
-          cur = cur.filter(x=>x!==opt);
-        } else {
-          if(cur.length >= f.max) return;
-          cur = [...cur, opt];
-        }
-        state.answers[f.id] = cur;
-        render();
-      };
-      box.appendChild(chip);
-    });
-    wrap.appendChild(box);
-    const count = document.createElement("div");
-    count.className = "ms-count";
-    count.textContent = `${chosen.length} of ${f.max} selected`;
-    wrap.appendChild(count);
-  }
-
-  return wrap;
-}
-
-function renderThanks(){
-  const d = document.createElement("div");
-  d.className = "card thanks";
-  d.innerHTML = `
-    <div class="mark">&#10003;</div>
-    <h2>Feedback recorded</h2>
-    <p>Thank you for your honest input. Your response has been added to the dealership's results.</p>
-  `;
-  return d;
 }
 
 async function submitResponse(){
