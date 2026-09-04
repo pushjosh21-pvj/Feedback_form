@@ -964,6 +964,18 @@ function stepValid(step){
 
 function render(){
   const app = document.getElementById("app");
+  
+  // --> ADD THIS BLOCK to block repeat visitors
+  if(localStorage.getItem('pb_survey_submitted') === 'true' && state.view !== "results") {
+    app.innerHTML = "";
+    app.appendChild(renderHeader());
+    const blockMsg = document.createElement("div");
+    blockMsg.className = "card empty";
+    blockMsg.innerHTML = "<h3>Already Submitted</h3><p>Our records indicate a response has already been submitted from this device. To maintain data integrity, multiple submissions are not allowed.</p>";
+    app.appendChild(blockMsg);
+    return;
+  }
+  
   if(state.view === "results"){ app.innerHTML = ""; app.appendChild(renderResults()); return; }
   if(state.view === "thanks"){ app.innerHTML = ""; app.appendChild(renderThanks()); return; }
   app.innerHTML = "";
@@ -1179,13 +1191,8 @@ function renderThanks(){
   d.innerHTML = `
     <div class="mark">&#10003;</div>
     <h2>Feedback recorded</h2>
-    <p>Thank you for your honest input. Your response has been added anonymously to the dealership's results.</p>
+    <p>Thank you for your honest input. Your response has been added to the dealership's results.</p>
   `;
-  const btn = document.createElement("button");
-  btn.className = "btn";
-  btn.textContent = "Submit another response";
-  btn.onclick = ()=>{ state = {step:0, answers:{}, view:"form"}; render(); };
-  d.appendChild(btn);
   return d;
 }
 
@@ -1194,7 +1201,6 @@ async function submitResponse(){
   const btn = document.getElementById("nextBtn");
   if(btn){ btn.disabled = true; btn.textContent = "Saving\u2026"; }
   try{
-    // text/plain avoids a CORS preflight, which Apps Script cannot answer
     const res = await fetch(API_URL, {
       method: "POST",
       headers: { "Content-Type": "text/plain;charset=utf-8" },
@@ -1202,6 +1208,10 @@ async function submitResponse(){
     });
     const out = await res.json();
     if(!out || out.ok !== true) throw new Error(out && out.error || "save failed");
+    
+    // --> ADD THIS LINE to flag the browser
+    localStorage.setItem('pb_survey_submitted', 'true');
+    
     state.view = "thanks";
     render();
   } catch(err){
