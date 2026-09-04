@@ -278,7 +278,6 @@
    =================================================================== */
 const API_URL = "https://script.google.com/macros/s/AKfycbx9Y_zlmwt6jwu9tdFpxIMtAtYyJOJtf7K3ibZWddIAmHsHuLS81nYy29w0ymrxZszP/exec";
 let enteredCode = "";
-
 const REGIONS = ["North","Central","East","West","South KAT","South TK"];
 const DESIGNATIONS = ["Technician","Senior Technician","Diagnostic Technician","Service Advisor","Team Leader / Workshop Supervisor","Works Manager","Other"];
 const DEALER_MAPPING = {
@@ -863,7 +862,7 @@ const DEALER_MAPPING = {
 const QUALIFICATIONS = ["Below 10th","10th","12th / ITI","Diploma","Graduation","Post Graduation"];
 const TENURE = ["Less than 1 year","1–2 years","2–3 years","3–5 years","More than 5 years"];
 const SALARY_BANDS = ["Below ₹15,000","₹15,000–20,000","₹20,001–25,000","₹25,001–30,000","₹30,001–40,000","Above ₹40,000"];
-
+const AGE_BANDS = ["18–25 years", "26–35 years", "36–45 years", "46+ years"];
 const SCALE_SATISFACTION = ["Very Satisfied","Satisfied","Neutral","Dissatisfied","Very Dissatisfied"];
 const SCALE_FREQUENCY = ["Always","Usually","Sometimes","Rarely","Never"];
 const SCALE_EFFECTIVE = ["Very effectively","Effectively","Sometimes effectively","Rarely effectively","Not effectively"];
@@ -880,6 +879,7 @@ const STEPS = [
     sub:"Please enter your name and select your workshop details. Responses are used for survey analysis.",
     fields:[
       {id:"technicianName", type:"text", label:"Technician name", required:true, placeholder:"Enter your full name"},
+      {id:"age", type:"select", label:"Age", required:true, options:AGE_BANDS},
       {id:"region", type:"select", label:"Circle / Region", required:true, options:REGIONS},
       {id:"asm", type:"select", label:"ASM", required:true, options:[]},
       {id:"dealer", type:"select", label:"Dealer code - Dealer name", required:true, options:[]},
@@ -895,31 +895,22 @@ const STEPS = [
     fields:[
       {id:"q5", type:"scale", scale:SCALE_SATISFACTION, cat:"Overall Satisfaction", label:"How satisfied are you with your current job at this dealership?"},
       {id:"q6", type:"scale", scale:SCALE_SATISFACTION, cat:"Salary & Benefits", label:"How satisfied are you with your current salary in relation to your job responsibilities?"},
-      {id:"q7", type:"scale", scale:SCALE_SATISFACTION, cat:"Salary & Benefits", label:"How satisfied are you with the regularity and timely payment of your salary?"},
-      {id:"q8", type:"scale", scale:SCALE_SATISFACTION, cat:"Workplace Environment", label:"How satisfied are you with the working hours and duty timings?"},
-      {id:"q9", type:"scale", scale:SCALE_SATISFACTION, cat:"Workplace Environment", label:"How satisfied are you with your current workload?"},
-      {id:"q10", type:"scale", scale:SCALE_SATISFACTION, cat:"Workplace Environment", label:"How satisfied are you with the availability of adequate manpower in the workshop?"}
+      {id:"q9", type:"scale", scale:SCALE_SATISFACTION, cat:"Workplace Environment", label:"How satisfied are you with your current workload?"}
     ]
   },
   {
     id:"C", label:"Salary & facilities", title:"Salary, benefits & employee facilities",
     sub:null,
     fields:[
-      {id:"q11", type:"scale", scale:SCALE_SATISFACTION, cat:"Salary & Benefits", label:"How satisfied are you with the benefits provided by the dealership?", hint:"e.g. PF, ESI / medical insurance, bonus, incentives"},
-      {id:"q12", type:"scale", scale:SCALE_SATISFACTION, cat:"Salary & Benefits", label:"How satisfied are you with the availability and clarity of your leave entitlement?"},
-      {id:"q13", type:"scale", scale:SCALE_SATISFACTION, cat:"Workshop Facilities", label:"How satisfied are you with the workshop's basic employee facilities?", hint:"Drinking water, washroom, changing/locker facility, rest area, canteen"},
-      {id:"q14", type:"scale", scale:SCALE_SATISFACTION, cat:"Workshop Facilities", label:"How satisfied are you with the cleanliness, hygiene and overall condition of the workshop?"}
+      {id:"q11", type:"scale", scale:SCALE_SATISFACTION, cat:"Salary & Benefits", label:"How satisfied are you with the benefits provided by the dealership?", hint:"e.g. PF, ESI / medical insurance, bonus"},
+      {id:"q13", type:"scale", scale:SCALE_SATISFACTION, cat:"Workshop Facilities", label:"How satisfied are you with the workshop's basic employee facilities?", hint:"Drinking water, washroom, changing/locker facility, rest area, canteen"}
     ]
   },
   {
     id:"D", label:"Environment & management", title:"Working environment & management",
     sub:null,
     fields:[
-      {id:"q15", type:"scale", scale:SCALE_SATISFACTION, cat:"Workplace Environment", label:"How satisfied are you with the overall working environment in the workshop?"},
       {id:"q16", type:"scale", scale:SCALE_FREQUENCY, cat:"Management", label:"Do you feel that you are treated with respect by the dealer management and workshop supervisors?"},
-      {id:"q17", type:"scale", scale:SCALE_EFFECTIVE, cat:"Management", label:"How effectively does the dealer management address your concerns or problems?"},
-      {id:"q18", type:"scale", scale:SCALE_SATISFACTION, cat:"Workplace Environment", label:"How satisfied are you with the relationship and teamwork among workshop staff?"},
-      {id:"q19", type:"scale", scale:SCALE_SAFETY, cat:"Workplace Environment", label:"Do you feel safe and comfortable while performing your workshop duties?"},
       {id:"q20", type:"scale", scale:SCALE_SATISFACTION, cat:"Workshop Facilities", label:"How satisfied are you with the availability of required tools, equipment, PPE and working resources to perform your job effectively?"}
     ]
   },
@@ -929,9 +920,7 @@ const STEPS = [
     fields:[
       {id:"q21", type:"scale", scale:SCALE_SATISFACTION, cat:"Training & Career Growth", label:"How satisfied are you with the technical training provided to improve your skills?"},
       {id:"q22", type:"scale", scale:SCALE_SATISFACTION, cat:"Training & Career Growth", label:"How satisfied are you with the career growth opportunities available to you?"},
-      {id:"q23", type:"scale", scale:SCALE_SATISFACTION, cat:"Reward & Recognition", label:"How satisfied are you with the Reward & Recognition system at the dealership?"},
-      {id:"q24", type:"scale", scale:SCALE_SATISFACTION, cat:"Reward & Recognition", label:"How satisfied are you with the incentive system, if applicable?"},
-      {id:"q25", type:"scale", scale:SCALE_SATISFACTION, cat:"Training & Career Growth", label:"How satisfied are you with opportunities to learn new technologies, diagnostic skills and KTM/Triumph product knowledge?"}
+      {id:"q24", type:"scale", scale:SCALE_SATISFACTION, cat:"Reward & Recognition", label:"How satisfied are you with the incentive structure (i.e., additional pay over your salary based on achieving certain targets)?"}
     ]
   },
   {
@@ -946,10 +935,7 @@ const STEPS = [
     sub:null,
     fields:[
       {id:"q27", type:"scale", scale:SCALE_RETENTION, cat:null, label:"If you receive a suitable opportunity, how likely are you to continue working with this dealership?"},
-      {id:"q28", type:"scale", scale:SCALE_SATISFACTION, cat:"Overall Satisfaction", label:"Overall, how satisfied are you with your current job?"},
-      {id:"q29", type:"scale", scale:SCALE_RECOMMEND, cat:null, label:"Would you recommend this dealership as a good workplace to another technician or service professional?"},
-      {id:"q30", type:"text", label:"What is one thing the dealership should improve to make your work experience better?"},
-      {id:"q31", type:"text", label:"What is one thing the dealership is doing well and should continue?"}
+      {id:"q30", type:"text", label:"What is one thing the dealership should improve to make your work experience better?"}
     ]
   }
 ];
@@ -1442,9 +1428,9 @@ async function loadAndRenderResults(wrap, loadingEl){
 }
 
 function exportCSV(records){
-  const cols = ["ts","technicianName","region","asm","dealer","designation","qualification","tenure","salary",
-    "q5","q6","q7","q8","q9","q10","q11","q12","q13","q14","q15","q16","q17","q18","q19","q20",
-    "q21","q22","q23","q24","q25","q26","q27","q28","q29","q30","q31"];
+  const cols = ["ts","technicianName","age","region","asm","dealer","designation","qualification","tenure","salary",
+    "q5","q6","q9","q11","q13","q16","q20",
+    "q21","q22","q24","q26","q27","q30"];
   const rows = [cols.join(",")];
   records.forEach(r=>{
     const line = cols.map(c=>{
