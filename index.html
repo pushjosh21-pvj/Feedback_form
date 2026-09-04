@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pro Biking Workshop Staff Satisfaction Survey</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#191c1a;
+    --ink-soft:#5b6660;
+    --base:#e9ebe6;
+    --surface:#ffffff;
+    --line:#d7dbd3;
+    --amber:#b5601e;
+    --amber-deep:#8f4a17;
+    --steel:#33505c;
+    --steel-soft:#e4ecee;
+    --good:#3f7a52;
+    --warn:#b5601e;
+    --bad:#a4402f;
+    --radius:10px;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--base);
+    color:var(--ink);
+    font-family:'IBM Plex Sans', sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .display{font-family:'Space Grotesk', sans-serif;}
+  .wrap{
+    max-width:640px;
+    margin:0 auto;
+    padding:28px 20px 80px;
+  }
+  header.top{
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    margin-bottom:22px;
+    gap:12px;
+  }
+  header.top .brand{
+    font-family:'Space Grotesk', sans-serif;
+    font-weight:600;
+    font-size:15px;
+    letter-spacing:0.02em;
+    color:var(--ink);
+  }
+  header.top .brand span{color:var(--amber);}
+  header.top button{
+    background:none;border:none;color:var(--ink-soft);
+    font-family:'IBM Plex Sans', sans-serif;font-size:13px;
+    cursor:pointer;text-decoration:underline;padding:0;
+  }
+  .hero{
+    background:var(--ink);
+    color:#f2f1ec;
+    border-radius:var(--radius);
+    padding:26px 24px;
+    margin-bottom:18px;
+  }
+  .hero h1{
+    font-family:'Space Grotesk', sans-serif;
+    font-size:26px;
+    line-height:1.15;
+    margin:0 0 10px;
+    font-weight:600;
+  }
+  .hero p{
+    margin:0;
+    font-size:14.5px;
+    line-height:1.55;
+    color:#c7cbc4;
+    max-width:50ch;
+  }
+  .hero .assure{
+    margin-top:14px;
+    padding-top:14px;
+    border-top:1px solid #33372f;
+    font-size:13px;
+    color:#a9c3b0;
+    display:flex;
+    gap:8px;
+    align-items:flex-start;
+  }
+  .card{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:24px;
+  }
+  .progress-row{
+    display:flex;
+    gap:4px;
+    margin-bottom:20px;
+  }
+  .progress-row .seg{
+    height:4px;
+    flex:1;
+    background:var(--line);
+    border-radius:2px;
+    overflow:hidden;
+  }
+  .progress-row .seg i{
+    display:block;
+    height:100%;
+    width:0%;
+    background:var(--amber);
+    transition:width .25s ease;
+  }
+  .step-label{
+    font-size:12.5px;
+    color:var(--ink-soft);
+    margin-bottom:4px;
+  }
+  .step-title{
+    font-family:'Space Grotesk', sans-serif;
+    font-size:20px;
+    font-weight:600;
+    margin:0 0 4px;
+  }
+  .step-sub{
+    font-size:13.5px;
+    color:var(--ink-soft);
+    margin:0 0 22px;
+    line-height:1.5;
+  }
+  .field{margin-bottom:22px;}
+  .field:last-child{margin-bottom:0;}
+  .field label.qlabel{
+    display:block;
+    font-size:14.5px;
+    font-weight:500;
+    margin-bottom:10px;
+    line-height:1.4;
+  }
+  .field .hint{
+    font-size:12.5px;
+    color:var(--ink-soft);
+    margin:-6px 0 10px;
+  }
+  select, input[type=text], textarea{
+    width:100%;
+    font-family:'IBM Plex Sans', sans-serif;
+    font-size:14.5px;
+    padding:11px 12px;
+    border:1px solid var(--line);
+    border-radius:8px;
+    background:var(--surface);
+    color:var(--ink);
+  }
+  select:focus, input:focus, textarea:focus{
+    outline:2px solid var(--steel);
+    outline-offset:1px;
+    border-color:var(--steel);
+  }
+  textarea{resize:vertical;min-height:80px;line-height:1.5;}
+  .scale5{
+    display:flex;
+    flex-direction:column;
+    border:1px solid var(--line);
+    border-radius:8px;
+    overflow:hidden;
+  }
+  .scale5 .opt{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:11px 13px;
+    cursor:pointer;
+    border-bottom:1px solid var(--line);
+    font-size:14px;
+  }
+  .scale5 .opt:last-child{border-bottom:none;}
+  .scale5 .opt:hover{background:var(--steel-soft);}
+  .scale5 .opt input{accent-color:var(--steel);width:16px;height:16px;flex:none;}
+  .scale5 .opt.selected{background:var(--steel-soft);font-weight:500;}
+  .ms-grid{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+  }
+  .ms-grid .chip{
+    border:1px solid var(--line);
+    border-radius:20px;
+    padding:8px 13px;
+    font-size:13px;
+    cursor:pointer;
+    user-select:none;
+  }
+  .ms-grid .chip.selected{
+    background:var(--ink);
+    color:#fff;
+    border-color:var(--ink);
+  }
+  .ms-count{font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .nav-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-top:26px;
+  }
+  button.btn{
+    font-family:'IBM Plex Sans', sans-serif;
+    font-size:14px;
+    font-weight:500;
+    padding:11px 20px;
+    border-radius:8px;
+    border:1px solid var(--ink);
+    background:var(--ink);
+    color:#fff;
+    cursor:pointer;
+  }
+  button.btn.secondary{
+    background:none;
+    color:var(--ink);
+    border-color:var(--line);
+  }
+  button.btn:disabled{opacity:0.4;cursor:not-allowed;}
+  .err{
+    font-size:12.5px;
+    color:var(--bad);
+    margin-top:8px;
+  }
+  .thanks{
+    text-align:center;
+    padding:20px 4px;
+  }
+  .thanks .mark{
+    width:46px;height:46px;border-radius:50%;
+    background:var(--good);color:#fff;
+    display:flex;align-items:center;justify-content:center;
+    margin:0 auto 16px;font-size:22px;
+  }
+  .thanks h2{font-family:'Space Grotesk', sans-serif;font-size:21px;margin:0 0 8px;}
+  .thanks p{font-size:14px;color:var(--ink-soft);line-height:1.55;margin:0 auto 20px;max-width:40ch;}
+
+  /* results view */
+  .rgate{padding:30px 0;}
+  .rgate input{margin-bottom:12px;}
+  .kpi-row{display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap;}
+  .kpi{
+    flex:1;min-width:130px;
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:16px 16px 14px;
+  }
+  .kpi .num{font-family:'Space Grotesk', sans-serif;font-size:28px;font-weight:600;}
+  .kpi .lbl{font-size:12px;color:var(--ink-soft);margin-top:2px;}
+  .bar-row{margin-bottom:12px;}
+  .bar-row .bhead{display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px;}
+  .bar-track{height:9px;background:var(--line);border-radius:5px;overflow:hidden;}
+  .bar-fill{height:100%;background:var(--steel);}
+  .factor-row{display:flex;justify-content:space-between;font-size:13px;padding:7px 0;border-bottom:1px solid var(--line);}
+  .factor-row:last-child{border-bottom:none;}
+  .results-actions{display:flex;gap:10px;margin-top:20px;flex-wrap:wrap;}
+  .empty{font-size:13.5px;color:var(--ink-soft);padding:20px 0;}
+  @media (max-width:420px){
+    .hero h1{font-size:22px;}
+    .wrap{padding:20px 14px 70px;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+
+<script>
+const REGIONS = ["North","Central","East","West","South KAT","South TK"];
+const DESIGNATIONS = ["Technician","Senior Technician","Diagnostic Technician","Service Advisor","Team Leader / Workshop Supervisor","Works Manager","Other"];
+const QUALIFICATIONS = ["Below 10th","10th","12th / ITI","Diploma","Graduation","Post Graduation"];
+const TENURE = ["Less than 1 year","1–2 years","2–3 years","3–5 years","More than 5 years"];
+const SALARY_BANDS = ["Below ₹15,000","₹15,000–20,000","₹20,001–25,000","₹25,001–30,000","₹30,001–40,000","Above ₹40,000"];
+
+const SCALE_SATISFACTION = ["Very Satisfied","Satisfied","Neutral","Dissatisfied","Very Dissatisfied"];
+const SCALE_FREQUENCY = ["Always","Usually","Sometimes","Rarely","Never"];
+const SCALE_EFFECTIVE = ["Very effectively","Effectively","Sometimes effectively","Rarely effectively","Not effectively"];
+const SCALE_SAFETY = ["Very safe and comfortable","Safe and comfortable","Neutral","Somewhat uncomfortable","Very uncomfortable"];
+const SCALE_RETENTION = ["Definitely continue","Probably continue","Not sure","Probably leave","Definitely leave"];
+const SCALE_RECOMMEND = ["Definitely Yes","Probably Yes","Not Sure","Probably No","Definitely No"];
+
+const FACTORS = ["Low salary","Limited salary growth","High workload","Long working hours","Lack of manpower","Limited career growth","Lack of training","Lack of recognition","Incentive not attractive","Incentive calculation not clear/fair","Management behaviour","Supervisor behaviour","Workshop facilities","Lack of tools/equipment","Lack of employee benefits","Leave-related issues","Distance/travel to workplace","Job security","Other"];
+
+// category tag used for the satisfaction index breakdown
+const STEPS = [
+  {
+    id:"profile", label:"Staff profile", title:"About you and your workshop",
+    sub:"No name is collected. Answers are anonymous and used only in aggregate.",
+    fields:[
+      {id:"dealer", type:"text", label:"Dealer name or dealer code", required:true, placeholder:"e.g. PBK-MUM-014"},
+      {id:"region", type:"select", label:"Region", required:true, options:REGIONS},
+      {id:"designation", type:"select", label:"Designation", required:true, options:DESIGNATIONS},
+      {id:"qualification", type:"select", label:"Highest qualification", required:true, options:QUALIFICATIONS},
+      {id:"tenure", type:"select", label:"How long have you worked at this dealership?", required:true, options:TENURE},
+      {id:"salary", type:"select", label:"Approximate monthly in-hand salary", required:true, options:SALARY_BANDS}
+    ]
+  },
+  {
+    id:"B", label:"Job satisfaction", title:"Overall job satisfaction",
+    sub:"Rate each area from Very Satisfied to Very Dissatisfied.",
+    fields:[
+      {id:"q5", type:"scale", scale:SCALE_SATISFACTION, cat:"Overall Satisfaction", label:"How satisfied are you with your current job at this dealership?"},
+      {id:"q6", type:"scale", scale:SCALE_SATISFACTION, cat:"Salary & Benefits", label:"How satisfied are you with your current salary in relation to your job responsibilities?"},
+      {id:"q7", type:"scale", scale:SCALE_SATISFACTION, cat:"Salary & Benefits", label:"How satisfied are you with the regularity and timely payment of your salary?"},
+      {id:"q8", type:"scale", scale:SCALE_SATISFACTION, cat:"Workplace Environment", label:"How satisfied are you with the working hours and duty timings?"},
+      {id:"q9", type:"scale", scale:SCALE_SATISFACTION, cat:"Workplace Environment", label:"How satisfied are you with your current workload?"},
+      {id:"q10", type:"scale", scale:SCALE_SATISFACTION, cat:"Workplace Environment", label:"How satisfied are you with the availability of adequate manpower in the workshop?"}
+    ]
+  },
+  {
+    id:"C", label:"Salary & facilities", title:"Salary, benefits & employee facilities",
+    sub:null,
+    fields:[
+      {id:"q11", type:"scale", scale:SCALE_SATISFACTION, cat:"Salary & Benefits", label:"How satisfied are you with the benefits provided by the dealership?", hint:"e.g. PF, ESI / medical insurance, bonus, incentives"},
+      {id:"q12", type:"scale", scale:SCALE_SATISFACTION, cat:"Salary & Benefits", label:"How satisfied are you with the availability and clarity of your leave entitlement?"},
+      {id:"q13", type:"scale", scale:SCALE_SATISFACTION, cat:"Workshop Facilities", label:"How satisfied are you with the workshop's basic employee facilities?", hint:"Drinking water, washroom, changing/locker facility, rest area, canteen"},
+      {id:"q14", type:"scale", scale:SCALE_SATISFACTION, cat:"Workshop Facilities", label:"How satisfied are you with the cleanliness, hygiene and overall condition of the workshop?"}
+    ]
+  },
+  {
+    id:"D", label:"Environment & management", title:"Working environment & management",
+    sub:null,
+    fields:[
+      {id:"q15", type:"scale", scale:SCALE_SATISFACTION, cat:"Workplace Environment", label:"How satisfied are you with the overall working environment in the workshop?"},
+      {id:"q16", type:"scale", scale:SCALE_FREQUENCY, cat:"Management", label:"Do you feel that you are treated with respect by the dealer management and workshop supervisors?"},
+      {id:"q17", type:"scale", scale:SCALE_EFFECTIVE, cat:"Management", label:"How effectively does the dealer management address your concerns or problems?"},
+      {id:"q18", type:"scale", scale:SCALE_SATISFACTION, cat:"Workplace Environment", label:"How satisfied are you with the relationship and teamwork among workshop staff?"},
+      {id:"q19", type:"scale", scale:SCALE_SAFETY, cat:"Workplace Environment", label:"Do you feel safe and comfortable while performing your workshop duties?"},
+      {id:"q20", type:"scale", scale:SCALE_SATISFACTION, cat:"Workshop Facilities", label:"How satisfied are you with the availability of required tools, equipment, PPE and working resources to perform your job effectively?"}
+    ]
+  },
+  {
+    id:"E", label:"Training & growth", title:"Training, career growth & motivation",
+    sub:null,
+    fields:[
+      {id:"q21", type:"scale", scale:SCALE_SATISFACTION, cat:"Training & Career Growth", label:"How satisfied are you with the technical training provided to improve your skills?"},
+      {id:"q22", type:"scale", scale:SCALE_SATISFACTION, cat:"Training & Career Growth", label:"How satisfied are you with the career growth opportunities available to you?"},
+      {id:"q23", type:"scale", scale:SCALE_SATISFACTION, cat:"Reward & Recognition", label:"How satisfied are you with the Reward & Recognition system at the dealership?"},
+      {id:"q24", type:"scale", scale:SCALE_SATISFACTION, cat:"Reward & Recognition", label:"How satisfied are you with the incentive system, if applicable?"},
+      {id:"q25", type:"scale", scale:SCALE_SATISFACTION, cat:"Training & Career Growth", label:"How satisfied are you with opportunities to learn new technologies, diagnostic skills and KTM/Triumph product knowledge?"}
+    ]
+  },
+  {
+    id:"F", label:"Key factors", title:"What's affecting your satisfaction",
+    sub:null,
+    fields:[
+      {id:"q26", type:"multiselect", max:3, options:FACTORS, label:"What are the major factors affecting your satisfaction or motivation at work?", hint:"Select up to 3"}
+    ]
+  },
+  {
+    id:"G", label:"Final assessment", title:"Final assessment",
+    sub:null,
+    fields:[
+      {id:"q27", type:"scale", scale:SCALE_RETENTION, cat:null, label:"If you receive a suitable opportunity, how likely are you to continue working with this dealership?"},
+      {id:"q28", type:"scale", scale:SCALE_SATISFACTION, cat:"Overall Satisfaction", label:"Overall, how satisfied are you with your current job?"},
+      {id:"q29", type:"scale", scale:SCALE_RECOMMEND, cat:null, label:"Would you recommend this dealership as a good workplace to another technician or service professional?"},
+      {id:"q30", type:"text", label:"What is one thing the dealership should improve to make your work experience better?"},
+      {id:"q31", type:"text", label:"What is one thing the dealership is doing well and should continue?"}
+    ]
+  }
+];
+
+const CATEGORIES = ["Salary & Benefits","Workshop Facilities","Workplace Environment","Management","Training & Career Growth","Reward & Recognition","Overall Satisfaction"];
+
+let state = { step:0, answers:{}, view:"form" };
+
+function scaleScore(scaleArr, value){
+  const idx = scaleArr.indexOf(value);
+  return idx === -1 ? null : (5 - idx);
+}
+
+function fieldValid(f){
+  const v = state.answers[f.id];
+  if(f.type==="text") return true; // open text optional
+  if(f.type==="multiselect") return true; // optional
+  if(!f.required && f.type!=="scale") return true;
+  if(f.type==="scale") return !!v;
+  return v !== undefined && v !== "";
+}
+
+function stepValid(step){
+  return step.fields.every(fieldValid);
+}
+
+function render(){
+  const app = document.getElementById("app");
+  if(state.view === "results"){ app.innerHTML = ""; app.appendChild(renderResults()); return; }
+  if(state.view === "thanks"){ app.innerHTML = ""; app.appendChild(renderThanks()); return; }
+  app.innerHTML = "";
+  app.appendChild(renderHeader());
+  if(state.step === 0) app.appendChild(renderHero());
+  app.appendChild(renderCard());
+}
+
+function renderHeader(){
+  const h = document.createElement("header");
+  h.className = "top";
+  h.innerHTML = `<div class="brand">Pro Biking <span>&middot;</span> Staff Voice</div>`;
+  const btn = document.createElement("button");
+  btn.textContent = "View results";
+  btn.onclick = () => { state.view = "results"; render(); };
+  h.appendChild(btn);
+  return h;
+}
+
+function renderHero(){
+  const d = document.createElement("div");
+  d.className = "hero";
+  d.innerHTML = `
+    <h1>Workshop Staff Satisfaction Survey</h1>
+    <p>KTM &amp; Triumph dealership workshop staff — this survey covers your job, pay and benefits, facilities, management, training and growth. It takes about 5 minutes.</p>
+    <div class="assure">
+      <span>&#9679;</span>
+      <span>Your name is never collected. Please answer honestly &mdash; individual responses are kept confidential and only reported in aggregate.</span>
+    </div>`;
+  return d;
+}
+
+function renderCard(){
+  const step = STEPS[state.step];
+  const card = document.createElement("div");
+  card.className = "card";
+
+  const prow = document.createElement("div");
+  prow.className = "progress-row";
+  STEPS.forEach((s,i)=>{
+    const seg = document.createElement("div");
+    seg.className = "seg";
+    const fill = document.createElement("i");
+    fill.style.width = i < state.step ? "100%" : (i===state.step ? "45%" : "0%");
+    seg.appendChild(fill);
+    prow.appendChild(seg);
+  });
+  card.appendChild(prow);
+
+  const lbl = document.createElement("div");
+  lbl.className = "step-label";
+  lbl.textContent = `Section ${state.step+1} of ${STEPS.length} \u2014 ${step.label}`;
+  card.appendChild(lbl);
+
+  const title = document.createElement("h2");
+  title.className = "step-title";
+  title.textContent = step.title;
+  card.appendChild(title);
+
+  if(step.sub){
+    const sub = document.createElement("p");
+    sub.className = "step-sub";
+    sub.textContent = step.sub;
+    card.appendChild(sub);
+  } else {
+    const spacer = document.createElement("div");
+    spacer.style.marginBottom = "16px";
+    card.appendChild(spacer);
+  }
+
+  step.fields.forEach(f => card.appendChild(renderField(f)));
+
+  const errBox = document.createElement("div");
+  errBox.className = "err";
+  errBox.id = "errBox";
+  card.appendChild(errBox);
+
+  const nav = document.createElement("div");
+  nav.className = "nav-row";
+  const back = document.createElement("button");
+  back.className = "btn secondary";
+  back.textContent = "Back";
+  back.disabled = state.step === 0;
+  back.onclick = () => { state.step = Math.max(0, state.step-1); render(); };
+  nav.appendChild(back);
+
+  const next = document.createElement("button");
+  next.className = "btn";
+  next.textContent = state.step === STEPS.length-1 ? "Submit feedback" : "Next";
+  next.onclick = () => {
+    if(!stepValid(step)){
+      document.getElementById("errBox").textContent = "Please answer every question in this section before continuing.";
+      return;
+    }
+    if(state.step === STEPS.length-1){ submitResponse(); return; }
+    state.step += 1;
+    render();
+  };
+  nav.appendChild(next);
+  card.appendChild(nav);
+
+  return card;
+}
+
+function renderField(f){
+  const wrap = document.createElement("div");
+  wrap.className = "field";
+
+  const label = document.createElement("label");
+  label.className = "qlabel";
+  label.textContent = f.label;
+  wrap.appendChild(label);
+
+  if(f.hint){
+    const hint = document.createElement("div");
+    hint.className = "hint";
+    hint.textContent = f.hint;
+    wrap.appendChild(hint);
+  }
+
+  if(f.type === "select"){
+    const sel = document.createElement("select");
+    sel.innerHTML = `<option value="">Select&hellip;</option>` + f.options.map(o=>`<option value="${o}" ${state.answers[f.id]===o?"selected":""}>${o}</option>`).join("");
+    sel.onchange = (e)=>{ state.answers[f.id] = e.target.value; };
+    wrap.appendChild(sel);
+  }
+
+  if(f.type === "text"){
+    const ta = document.createElement("textarea");
+    ta.value = state.answers[f.id] || "";
+    ta.placeholder = f.placeholder || "";
+    ta.oninput = (e)=>{ state.answers[f.id] = e.target.value; };
+    wrap.appendChild(ta);
+  }
+
+  if(f.type === "scale"){
+    const box = document.createElement("div");
+    box.className = "scale5";
+    f.scale.forEach((opt)=>{
+      const row = document.createElement("label");
+      row.className = "opt" + (state.answers[f.id]===opt ? " selected" : "");
+      row.innerHTML = `<input type="radio" name="${f.id}" ${state.answers[f.id]===opt?"checked":""}/><span>${opt}</span>`;
+      row.querySelector("input").onchange = ()=>{ state.answers[f.id] = opt; render(); };
+      box.appendChild(row);
+    });
+    wrap.appendChild(box);
+  }
+
+  if(f.type === "multiselect"){
+    const box = document.createElement("div");
+    box.className = "ms-grid";
+    const chosen = state.answers[f.id] || [];
+    f.options.forEach(opt=>{
+      const chip = document.createElement("div");
+      chip.className = "chip" + (chosen.includes(opt) ? " selected" : "");
+      chip.textContent = opt;
+      chip.onclick = ()=>{
+        let cur = state.answers[f.id] || [];
+        if(cur.includes(opt)){
+          cur = cur.filter(x=>x!==opt);
+        } else {
+          if(cur.length >= f.max) return;
+          cur = [...cur, opt];
+        }
+        state.answers[f.id] = cur;
+        render();
+      };
+      box.appendChild(chip);
+    });
+    wrap.appendChild(box);
+    const count = document.createElement("div");
+    count.className = "ms-count";
+    count.textContent = `${chosen.length} of ${f.max} selected`;
+    wrap.appendChild(count);
+  }
+
+  return wrap;
+}
+
+function renderThanks(){
+  const d = document.createElement("div");
+  d.className = "card thanks";
+  d.innerHTML = `
+    <div class="mark">&#10003;</div>
+    <h2>Feedback recorded</h2>
+    <p>Thank you for your honest input. Your response has been added anonymously to the dealership's results.</p>
+  `;
+  const btn = document.createElement("button");
+  btn.className = "btn";
+  btn.textContent = "Submit another response";
+  btn.onclick = ()=>{ state = {step:0, answers:{}, view:"form"}; render(); };
+  d.appendChild(btn);
+  return d;
+}
+
+async function submitResponse(){
+  const record = { ts: Date.now(), ...state.answers };
+  try{
+    const key = "responses:" + Date.now() + "-" + Math.random().toString(36).slice(2,8);
+    const res = await window.storage.set(key, JSON.stringify(record), true);
+    if(!res){
+      document.getElementById("errBox").textContent = "Could not save your response. Please try again.";
+      return;
+    }
+    state.view = "thanks";
+    render();
+  } catch(err){
+    document.getElementById("errBox").textContent = "Could not save your response. Please check your connection and try again.";
+  }
+}
+
+// ---------- results ----------
+let resultsUnlocked = false;
+
+function renderResults(){
+  const wrap = document.createElement("div");
+  wrap.appendChild(renderHeaderResults());
+
+  if(!resultsUnlocked){
+    const card = document.createElement("div");
+    card.className = "card rgate";
+    card.innerHTML = `<h2 class="step-title" style="margin-bottom:6px;">Results dashboard</h2>
+      <p class="step-sub">Enter the access code to view aggregated results.</p>`;
+    const input = document.createElement("input");
+    input.type = "password";
+    input.placeholder = "Access code";
+    const btn = document.createElement("button");
+    btn.className = "btn";
+    btn.textContent = "View results";
+    const err = document.createElement("div");
+    err.className = "err";
+    btn.onclick = ()=>{
+      if(input.value === "PBK2026"){
+        resultsUnlocked = true;
+        render();
+      } else {
+        err.textContent = "Incorrect code.";
+      }
+    };
+    card.appendChild(input);
+    card.appendChild(btn);
+    card.appendChild(err);
+    wrap.appendChild(card);
+    return wrap;
+  }
+
+  const loading = document.createElement("div");
+  loading.className = "card empty";
+  loading.textContent = "Loading responses\u2026";
+  wrap.appendChild(loading);
+  loadAndRenderResults(wrap, loading);
+  return wrap;
+}
+
+function renderHeaderResults(){
+  const h = document.createElement("header");
+  h.className = "top";
+  h.innerHTML = `<div class="brand">Pro Biking <span>&middot;</span> Staff Voice</div>`;
+  const btn = document.createElement("button");
+  btn.textContent = "Back to survey";
+  btn.onclick = ()=>{ state.view="form"; state.step=0; state.answers={}; render(); };
+  h.appendChild(btn);
+  return h;
+}
+
+async function loadAndRenderResults(wrap, loadingEl){
+  let records = [];
+  try{
+    const listRes = await window.storage.list("responses:", true);
+    const keys = (listRes && listRes.keys) || [];
+    for(const k of keys){
+      try{
+        const r = await window.storage.get(k, true);
+        if(r && r.value) records.push(JSON.parse(r.value));
+      }catch(e){ /* skip unreadable key */ }
+    }
+  }catch(e){
+    loadingEl.textContent = "Could not load results right now.";
+    return;
+  }
+
+  loadingEl.remove();
+
+  if(records.length === 0){
+    const empty = document.createElement("div");
+    empty.className = "card empty";
+    empty.textContent = "No responses yet. Once dealership staff submit the survey, results will appear here.";
+    wrap.appendChild(empty);
+    return;
+  }
+
+  // overall index
+  const catScores = {}; CATEGORIES.forEach(c=>catScores[c]=[]);
+  let allScores = [];
+  STEPS.forEach(step=>{
+    step.fields.forEach(f=>{
+      if(f.type==="scale" && f.cat){
+        records.forEach(rec=>{
+          const val = rec[f.id];
+          if(val){
+            const s = scaleScore(f.scale, val);
+            if(s!==null){ catScores[f.cat].push(s); allScores.push(s); }
+          }
+        });
+      }
+    });
+  });
+  const avg = arr => arr.length ? arr.reduce((a,b)=>a+b,0)/arr.length : null;
+  const overallIdx = avg(allScores);
+  const overallPct = overallIdx!==null ? Math.round(overallIdx/5*100) : null;
+
+  // retention risk (q27) and recommend (q29)
+  const retentionRisk = records.filter(r=>r.q27==="Probably leave"||r.q27==="Definitely leave").length;
+  const recommendYes = records.filter(r=>r.q29==="Definitely Yes"||r.q29==="Probably Yes").length;
+
+  const card1 = document.createElement("div");
+  card1.className = "kpi-row";
+  card1.innerHTML = `
+    <div class="kpi"><div class="num">${records.length}</div><div class="lbl">Responses</div></div>
+    <div class="kpi"><div class="num">${overallPct!==null?overallPct+"%":"\u2013"}</div><div class="lbl">Staff Satisfaction Index</div></div>
+    <div class="kpi"><div class="num">${Math.round(retentionRisk/records.length*100)}%</div><div class="lbl">Flight-risk (likely to leave)</div></div>
+    <div class="kpi"><div class="num">${Math.round(recommendYes/records.length*100)}%</div><div class="lbl">Would recommend dealership</div></div>
+  `;
+  wrap.appendChild(card1);
+
+  const card2 = document.createElement("div");
+  card2.className = "card";
+  card2.style.marginBottom = "14px";
+  const h3 = document.createElement("h3");
+  h3.className = "step-title";
+  h3.style.fontSize = "16px";
+  h3.textContent = "Index by category";
+  card2.appendChild(h3);
+  CATEGORIES.forEach(c=>{
+    const a = avg(catScores[c]);
+    const pct = a!==null ? Math.round(a/5*100) : 0;
+    const row = document.createElement("div");
+    row.className = "bar-row";
+    row.innerHTML = `<div class="bhead"><span>${c}</span><span>${a!==null?pct+"%":"no data"}</span></div>
+      <div class="bar-track"><div class="bar-fill" style="width:${pct}%"></div></div>`;
+    card2.appendChild(row);
+  });
+  wrap.appendChild(card2);
+
+  // top factors
+  const factorCounts = {};
+  FACTORS.forEach(f=>factorCounts[f]=0);
+  records.forEach(r=>{
+    (r.q26||[]).forEach(f=>{ factorCounts[f] = (factorCounts[f]||0)+1; });
+  });
+  const topFactors = Object.entries(factorCounts).filter(([,c])=>c>0).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  if(topFactors.length){
+    const card3 = document.createElement("div");
+    card3.className = "card";
+    card3.style.marginBottom = "14px";
+    const h4 = document.createElement("h3");
+    h4.className = "step-title";
+    h4.style.fontSize = "16px";
+    h4.textContent = "Top factors affecting satisfaction";
+    card3.appendChild(h4);
+    topFactors.forEach(([f,c])=>{
+      const row = document.createElement("div");
+      row.className = "factor-row";
+      row.innerHTML = `<span>${f}</span><span>${c} mention${c>1?"s":""}</span>`;
+      card3.appendChild(row);
+    });
+    wrap.appendChild(card3);
+  }
+
+  // region breakdown
+  const regionGroups = {};
+  records.forEach(r=>{
+    const reg = r.region || "Unspecified";
+    if(!regionGroups[reg]) regionGroups[reg] = [];
+  });
+  STEPS.forEach(step=>{
+    step.fields.forEach(f=>{
+      if(f.type==="scale" && f.cat){
+        records.forEach(rec=>{
+          const val = rec[f.id];
+          if(val){
+            const s = scaleScore(f.scale, val);
+            if(s!==null){
+              const reg = rec.region || "Unspecified";
+              regionGroups[reg].push(s);
+            }
+          }
+        });
+      }
+    });
+  });
+  const regionEntries = Object.entries(regionGroups).filter(([,arr])=>arr.length);
+  if(regionEntries.length){
+    const card4 = document.createElement("div");
+    card4.className = "card";
+    card4.style.marginBottom = "14px";
+    const h5 = document.createElement("h3");
+    h5.className = "step-title";
+    h5.style.fontSize = "16px";
+    h5.textContent = "Index by region";
+    card4.appendChild(h5);
+    regionEntries.sort((a,b)=>avg(b[1])-avg(a[1])).forEach(([reg,arr])=>{
+      const pct = Math.round(avg(arr)/5*100);
+      const row = document.createElement("div");
+      row.className = "bar-row";
+      row.innerHTML = `<div class="bhead"><span>${reg}</span><span>${pct}%</span></div>
+        <div class="bar-track"><div class="bar-fill" style="width:${pct}%"></div></div>`;
+      card4.appendChild(row);
+    });
+    wrap.appendChild(card4);
+  }
+
+  const actions = document.createElement("div");
+  actions.className = "results-actions";
+  const exportBtn = document.createElement("button");
+  exportBtn.className = "btn";
+  exportBtn.textContent = "Export responses (CSV)";
+  exportBtn.onclick = ()=>exportCSV(records);
+  actions.appendChild(exportBtn);
+  wrap.appendChild(actions);
+}
+
+function exportCSV(records){
+  const cols = ["ts","dealer","region","designation","qualification","tenure","salary",
+    "q5","q6","q7","q8","q9","q10","q11","q12","q13","q14","q15","q16","q17","q18","q19","q20",
+    "q21","q22","q23","q24","q25","q26","q27","q28","q29","q30","q31"];
+  const rows = [cols.join(",")];
+  records.forEach(r=>{
+    const line = cols.map(c=>{
+      let v = r[c];
+      if(Array.isArray(v)) v = v.join(" | ");
+      if(v===undefined || v===null) v = "";
+      v = String(v).replace(/"/g,'""');
+      return `"${v}"`;
+    }).join(",");
+    rows.push(line);
+  });
+  const blob = new Blob([rows.join("\n")], {type:"text/csv"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "pro-biking-staff-satisfaction-responses.csv";
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
+render();
+</script>
+</body>
+</html>
