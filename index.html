@@ -260,6 +260,45 @@
   .factor-row:last-child{border-bottom:none;}
   .results-actions{display:flex;gap:10px;margin-top:20px;flex-wrap:wrap;}
   .empty{font-size:13.5px;color:var(--ink-soft);padding:20px 0;}
+
+  /* ===== Business-unit tabs (results dashboard only) ===== */
+  .bu-tabs{display:flex;gap:6px;}
+  .bu-tab{
+    flex:1;
+    font-family:'Space Grotesk', sans-serif;
+    font-size:14.5px;
+    font-weight:600;
+    letter-spacing:0.02em;
+    padding:12px 10px;
+    border:1px solid var(--line);
+    border-bottom:none;
+    border-radius:10px 10px 0 0;
+    background:var(--surface);
+    color:var(--ink-soft);
+    cursor:pointer;
+  }
+  .bu-tab:hover{color:var(--ink);}
+  .bu-tab.active{color:#ffffff;border-color:transparent;}
+  .bu-tab.active.ktm{background:#FF6600;}
+  .bu-tab.active.trm{background:#000000;}
+  .bu-head{
+    color:#ffffff;
+    border-radius:0 0 var(--radius) var(--radius);
+    padding:16px 18px;
+    margin-bottom:14px;
+  }
+  .bu-head.ktm{background:#FF6600;}
+  .bu-head.trm{background:#000000;}
+  .bu-head h2{
+    font-family:'Space Grotesk', sans-serif;
+    font-size:19px;font-weight:600;margin:0 0 3px;color:#ffffff;
+  }
+  .bu-head p{margin:0;font-size:13px;color:rgba(255,255,255,0.85);}
+  .bu-scope.ktm{--accent:#FF6600;}
+  .bu-scope.trm{--accent:#000000;}
+  .bu-scope .bar-fill{background:var(--accent);}
+  .bu-scope .kpi .num{color:var(--accent);}
+  .bu-note{font-size:12.5px;color:var(--ink-soft);margin:0 0 14px;}
   @media (max-width:420px){
     .hero h1{font-size:22px;}
     .wrap{padding:20px 14px 70px;}
@@ -1926,13 +1965,546 @@ function renderHeaderResults(){
   return h;
 }
 
+let allRecords  = [];
+let dashFilters = { region:"", asm:"", dealer:"", designation:"", tenure:"" };
+
+/* ---------- business unit (KTM / Triumph) ----------
+   Source: Dealer_Code__BU_Mapping.xlsx. Dealer names below are byte-identical
+   to the ones in DEALER_MAPPING above, so every submitted dealer resolves. */
+const BU_MAPPING = {
+  "12291-SURAJ AUTOMOBILE": "KTM",
+  "12349-SOCIETY MOTORS LTD": "KTM",
+  "12387-SHREE BAJAJ": "KTM",
+  "12393-DEVENDRA AUTO": "KTM",
+  "12712-BHUMI AUTOMOBILES": "KTM",
+  "12892-GOLU AUTOMOBILES": "KTM",
+  "12902-SHREYANSH AUTOMOBILES": "KTM",
+  "12951-Pankh Autowheels Pvt. Ltd": "KTM",
+  "12980-VAISHALI ELECTRO INDIA": "KTM",
+  "12987-MISHRA AUTOMOTIVE SERVICES PVT LTD": "KTM",
+  "13031-OM SAI RAM": "KTM",
+  "13092-DIPAK AUTOMOBILE": "KTM",
+  "13121-MITALI AUTOMOBILE": "KTM",
+  "13663-AMR AUTOS": "KTM",
+  "13671-UDAY AUTOSALES PRIVATE LIMITED": "TRM",
+  "14119-SHIVA SCOOTER AGENCY": "TRM",
+  "14129-SHIVA AUTOMOBILES": "KTM",
+  "14253-RAM BHAWAN RAM AUTOMOBILES": "KTM",
+  "14389-HIMALAYA SCOOTERS": "KTM",
+  "14402-SAM MOOVERS LLP": "KTM",
+  "14406-ATIKSH BAJAJ": "KTM",
+  "14453-MANORAM AUTOS PRIVATE LIMITED": "KTM",
+  "12027-AUTO WORLD": "KTM",
+  "12343-MAYUR AUTO PVT LTD": "KTM",
+  "12348-SHREE BALAJI MOTOR CORPORATION": "KTM",
+  "12365-TIRHUT AUTOMOBILES": "KTM",
+  "12408-UDAY AUTOSALES PVT LTD": "KTM",
+  "12411-CITY MOTORS": "KTM",
+  "12425-AKARSH AUTO PVT LTD": "KTM",
+  "12456-SADHANA AUTO AGENCIES PVT LTD": "KTM",
+  "12586-PEEKAY AUTOMOBILES LLP": "KTM",
+  "12662-AKC BAJAJ": "KTM",
+  "12693-RAJESH AUTOS": "KTM",
+  "12695-AHUJA AUTO SALES": "KTM",
+  "12775-BRIJ AUTO": "KTM",
+  "12776-SHRI SAI ENTERPRISES": "KTM",
+  "12860-COSMIC MOBIKES ( A Unit Of J G Ent": "KTM",
+  "12863-V & S AUTOMOBILES": "KTM",
+  "12866-BALAJI AUTO LINKS": "KTM",
+  "12888-AQIB AUTOMOBILES PVT.LTD": "KTM",
+  "12916-PEEKAY AUTOMOBILES LLP": "KTM",
+  "12923-RAJENDRA AUTOMOBILES": "KTM",
+  "12952-NEW STAR ENGINEERING WORKS": "KTM",
+  "12977-SHAIL KAMAL TRACTORS": "KTM",
+  "13015-TANI AUTOMOBILE": "KTM",
+  "13054-J P SALES CORPORATION": "KTM",
+  "13060-R K AUTO": "KTM",
+  "13144-VAISHNAVI BAJAJ": "KTM",
+  "13152-PUSHPAK AUTOMOBILES": "KTM",
+  "13224-A2Z WHEEL RACE PRIVATE LIMITED": "KTM",
+  "13386-J.S.V AUTOMOTIVES PRIVATE LIMITED": "KTM",
+  "13499-VOLKAN BAJAJ": "KTM",
+  "14200-MAGADH AUTO AGENCY": "KTM",
+  "12151-JAYPEE AUTOMOVERS": "KTM",
+  "12317-Birj Motors": "KTM",
+  "12324-PUSHPA SALES PVT LTD": "KTM",
+  "12351-RANJU AUTOMOBILES": "KTM",
+  "12363-SHIEL AUTOS": "KTM",
+  "12410-EXCEL AUTO": "KTM",
+  "12412-FLAIR MOTORS PVT LTD": "KTM",
+  "12422-P R MOTORS": "KTM",
+  "12434-VIKRANT AUTOMOBILES": "KTM",
+  "12651-JAGAT AUTOMOBILES": "KTM",
+  "12654-JAI BAJRANG BAJAJ": "KTM",
+  "12657-SINGH AUTO LINK (P) LTD": "KTM",
+  "12694-UNITED AUTOMOBILES": "KTM",
+  "12763-AMAN MOTORS": "KTM",
+  "12785-Pacific Motors Pvt. Ltd": "KTM",
+  "12837-VOLKAN BAJAJ A Unit of Vatsal": "KTM",
+  "12859-FALCON AUTOMOBILES": "KTM",
+  "12932-AMAN MOTORS": "KTM",
+  "12941-POOJA AUTOMOBILES": "KTM",
+  "12942-MAHAVEER AUTOMOBILES": "KTM",
+  "12986-MISHRA AUTOMOTIVE SERVICES PVT LTD": "KTM",
+  "12993-BRIJ AUTO": "KTM",
+  "12997-VIKRANT AUTOMOBILES LLP": "KTM",
+  "13007-WOODLAND AUTO WHEELS": "KTM",
+  "13011-PARADISE AUOTMOBILE": "KTM",
+  "13045-CHOUDHARY AUTOMOBILE": "KTM",
+  "13189-AUTO MODA": "KTM",
+  "13679-J.S.V AUTOMOTIVES PRIVATE LIMITED": "TRM",
+  "13680-COSMIC MOBIKES (A UNIT OF J G ENTER": "TRM",
+  "14034-MAGADH AUTO AGENCY": "TRM",
+  "14165-SWASTIK AUTO AGENCIES PRIVATE LIMIT": "TRM",
+  "12406-DAS AUTO AGENCY": "KTM",
+  "12754-RM MOTORS": "KTM",
+  "12996-OLIVE AUTO": "KTM",
+  "13023-BIKE ZONE E-STORE": "KTM",
+  "13103-BANERJEE AUTO CORPORATION PVT LTD": "KTM",
+  "13163-S.K.AUTOMOBILES": "KTM",
+  "13385-METAL MOTORS": "KTM",
+  "13549-DIPAK AUTOMOBILE": "KTM",
+  "14144-JKH AUTOWORLD LLP": "KTM",
+  "14206-MSB AUTOMOTIVE PRIVATE LIMITED": "KTM",
+  "14248-S K AUTOMOBILES": "KTM",
+  "14259-PERSEVERANCE MOTORS": "KTM",
+  "12096-GLOBAL ENTERPRISES": "KTM",
+  "12143-JUBI KTM": "KTM",
+  "12174-OLIVE AUTO": "KTM",
+  "12311-SHIVA SHAKTI AUTOMOBILES": "KTM",
+  "12337-GOENKA ENGINEERING WORKS": "KTM",
+  "12350-STANDARD MOTOR WORKS": "KTM",
+  "12359-SILIGURI AUTO WORKS PVT LTD": "KTM",
+  "12369-SALES & SERVICE AUTOMOTIVE PVT LTD": "KTM",
+  "12378-PLANET WHEELS PVT LTD": "KTM",
+  "12426-HIGHWAY BAJAJ": "KTM",
+  "12445-OSL AUTO PVT LTD": "KTM",
+  "12526-Lakhimpur KTM": "KTM",
+  "12554-SONTHALIA MOTORS PVT LTD": "KTM",
+  "12568-SRI KRISHNA ENTERPRISE": "KTM",
+  "12607-RM MOTORS": "KTM",
+  "12608-CHANDRANI ENTERPRISES PRIVATE LTD": "KTM",
+  "12646-SHUVALAXMI MOTORS": "KTM",
+  "12687-ARMAN MOTORS": "KTM",
+  "12751-SILIGURI AUTO WORKS PVT LTD": "KTM",
+  "12764-CHAMPAK AUTOMOBILES": "KTM",
+  "12765-SOVAN BAJAJ": "KTM",
+  "12862-JAMUNA AUTO": "KTM",
+  "12906-S.S. AUTO TRADER LLP": "KTM",
+  "12907-SHANKAR GOURI AUTOMOBILES": "KTM",
+  "13044-J R ENTERPRISES": "KTM",
+  "13046-SOVAN BAJAJ": "KTM",
+  "13114-MS ENTERPRISE": "KTM",
+  "13117-ZEUS MERCANTILE": "KTM",
+  "13170-MM MOTORS": "KTM",
+  "13176-UTKAL AUTO SERVICE": "KTM",
+  "13500-M/S PERSEVERANCE MOTORS": "KTM",
+  "13516-R K AUTOMART PRIVATE LIMITED": "KTM",
+  "13589-Saluja Automobiles": "KTM",
+  "13620-OSL AUTO PVT LTD": "KTM",
+  "14392-KGI MOTORWORLD PRIVATE LIMITED": "KTM",
+  "12117-Doimukh Trading Centre": "KTM",
+  "12142-AUTOMOBILES": "KTM",
+  "12218-SARKAR AUTOMOBILES": "KTM",
+  "12241-SISIRABHA PROPERTIES PRIVATE LTD": "KTM",
+  "12301-USG AUTOMOBILES PRIVATE LIMITED": "KTM",
+  "12328-AMIT MOTORS": "KTM",
+  "12346-MANIPUR MOTORS": "KTM",
+  "12364-SHREE AUTOMOBILES PVT LTD": "KTM",
+  "12400-S. S. AUTO": "KTM",
+  "12429-USG AUTOMOBILES PVT LTD": "KTM",
+  "12557-BINDU ENTERPRISE KTM AUTOMOBILE": "KTM",
+  "12558-SAMPARK BAJAJ": "KTM",
+  "12577-DONYI POLO HOLDINGS": "KTM",
+  "12578-SHARIEF ENTERPRISE": "KTM",
+  "12701-BANERJEE AUTO CORPORATION": "KTM",
+  "12995-M M MOTORS": "KTM",
+  "13012-ANIRBAAN ENTERPRISE": "KTM",
+  "13145-R.K. AUTOMOBILES": "KTM",
+  "13539-SHREE BHARAT MOTORS LIMITED": "TRM",
+  "13593-OSL AUTO PRIVATE LIMITED": "TRM",
+  "13667-SILIGURI AUTO WORKS PRIVATE LIMITED": "TRM",
+  "13668-METAL MOTORS": "TRM",
+  "14016-M/S OLIVE AUTOS": "TRM",
+  "14046-S.K.AUTOMOBILES": "TRM",
+  "14115-MSB AUTOMOTIVE PRIVATE LIMITED": "TRM",
+  "14131-SENGUPTA MOTORS": "TRM",
+  "14155-SOVAN BAJAJ": "TRM",
+  "14158-BANERJEE AUTO CORPORATION": "TRM",
+  "14185-RM MOTORS": "TRM",
+  "14204-SURAJ AUTOMOBILES": "TRM",
+  "14231-REVOLVE AUTOMOBILES": "TRM",
+  "14249-S K AUTOMOBILES": "TRM",
+  "14260-NOVA AUTO": "TRM",
+  "14390-KGI MOTORWORLD PRIVATE LIMITED": "TRM",
+  "14421-SALES AND SERVICE AUTOMOTIVE PRIVAT": "TRM",
+  "13540-SPEED MOTORCORP": "TRM",
+  "14207-MSB AUTOMOTIVE PRIVATE LIMITED": "TRM",
+  "14210-GOENKA ENGINEERING WORKS": "TRM",
+  "12358-SANGAM AUTO SALES": "KTM",
+  "12740-AARZOO MOTORS": "KTM",
+  "13527-M/s. AKM ENTERPRISES": "TRM",
+  "13594-DADA MOTOR ENTERPRISES LLP": "TRM",
+  "13697-JSB AUTOCARS PVT LTD": "TRM",
+  "14187-BALRAJ WHEELS PRIVATE LIMITED": "KTM",
+  "14285-SNEHA SALES": "KTM",
+  "11676-GLOBAL MOTORS": "KTM",
+  "11842-KASHMIR AUTOAIDS PVT LTD": "KTM",
+  "11916-NITESH AUTOMOBILES PVT LTD": "KTM",
+  "11918-NITESH AUTOMOBILES PVT LTD": "KTM",
+  "12082-Stag Trading Private Limited": "KTM",
+  "12146-HI-TECH AUTO MOBILES": "KTM",
+  "12264-UNIVERSAL AUTOMOTIVES PVT LTD": "KTM",
+  "12265-Aditya Automobiles": "KTM",
+  "12292-Eagle Automobile": "KTM",
+  "12320-LOVELY AUTOS": "KTM",
+  "12331-DOABA AUTOMOBILES": "KTM",
+  "12347-RAJA MOTORS": "KTM",
+  "12361-SHIVA SCOOTER AGENCY": "KTM",
+  "12368-SCOOTER AID CENTRE": "KTM",
+  "12389-BAGGA LINK SERVICE PVT LTD": "KTM",
+  "12409-BABA MOTORS": "KTM",
+  "12549-SHREE AMBA BAJAJ": "KTM",
+  "12570-JARYAL AUTOMOBILE": "KTM",
+  "12652-YASH CONCRETE CO": "KTM",
+  "12673-THE RACING STORE": "KTM",
+  "12697-RAMBAGH SERVICE STATION": "KTM",
+  "12813-SHREE MOTORS": "KTM",
+  "12816-S.B.AUTOMOBILES": "KTM",
+  "12858-TIRATH & SONS AUTOMOBILE": "KTM",
+  "12971-RAJMANDIR MOTORS": "KTM",
+  "13187-SWADESHI AUTO PVT LTD": "KTM",
+  "13188-Dada Motor Enterprises LLP": "KTM",
+  "13217-UNIVERSAL AUTOMOTIVES PVT LTD": "KTM",
+  "13337-MADHUR MOTORS": "KTM",
+  "13352-RRAG AUTOMOTIVE PVT LTD": "KTM",
+  "13553-LADAKH ESCAPADE": "KTM",
+  "13566-SHREE MOTORS": "KTM",
+  "12057-AJMER MOTORS PVT LTD": "KTM",
+  "12217-KHAIRIYA AUTOMOBILES": "KTM",
+  "12251-J.S. AUTOMOBILES": "KTM",
+  "12263-GRD TRUCKS PVT LTD": "KTM",
+  "12305-PARTAP AUTO (INDIA) PVT.LTD": "KTM",
+  "12325-DEWAN MOTORS": "KTM",
+  "12330-DADA MOTORS": "KTM",
+  "12332-DEWAN AUTO": "KTM",
+  "12341-KAMAL AUTO INDUSTRIES": "KTM",
+  "12345-RAJIV AUTOMOBILES": "KTM",
+  "12379-J S AUTOMOBILES": "KTM",
+  "12415-RAJMANDIR AUTO PVT LTD": "KTM",
+  "12416-SHREE SHYAM BAJAJ": "KTM",
+  "12431-KRISHNA AUTO SALES": "KTM",
+  "12501-DRIFT MOTORS": "KTM",
+  "12603-GRD TRUCKS PRIVATE LIMITED": "KTM",
+  "12784-P.L.AUTOMOBILES PVT. LTD": "KTM",
+  "12882-ST KABIR AUTOMOBILES": "KTM",
+  "13131-Kamal Auto Mart Pvt Ltd": "KTM",
+  "13424-LADAKH ESCAPADE ADVENTURE UNLIMITED": "KTM",
+  "13470-M/s. KAMAL AUTO INDUSTRIES COACH WO": "KTM",
+  "13531-DEHRADUN AUTOMOTORS PRIVATE LIMITED": "TRM",
+  "13532-DEHRADUN AUTOMOTORS PRIVATE LIMITED": "TRM",
+  "13642-SHIVA SCOOTER AGENCY": "TRM",
+  "13672-Shiva Scooter Agency": "TRM",
+  "13709-JSB AUTOCARS PRIVATE LIMITED": "TRM",
+  "13712-BAGGA LINK SERVICE PRIVATE LIMITED": "TRM",
+  "13728-KASHMIR AUTOAIDS PRIVATE LIMITED": "TRM",
+  "14143-LADAKH ESCAPADE": "TRM",
+  "13534-KRISHNA AUTOMOBILES": "TRM",
+  "12252-Popular Motor Corporation": "KTM",
+  "12327-AKSHAYA AUTO SERVICE": "KTM",
+  "12367-VENKATA RAMANA AUTOMOBILES": "KTM",
+  "12404-POPULAR MOTOR CORPORATION": "KTM",
+  "12424-BIJJARAGI BAJAJ": "KTM",
+  "12444-SRI VINAYAKA MOBIKES PVT LTD": "KTM",
+  "12838-MAHI BIKES": "KTM",
+  "12908-LAKSHMI AUTO": "KTM",
+  "13256-VARUN MOTORS PRIVATE LIMITED": "KTM",
+  "13257-VARUN MOTORS PRIVATE LIMITED": "KTM",
+  "13561-JAIN MOTOCORP PVT LTD": "KTM",
+  "13590-VARUN MOTORS PRIVATE LIMITED": "TRM",
+  "13644-SAANVI TRADERS": "KTM",
+  "13796-CHANNAMMA MOTORS": "KTM",
+  "14192-KHIVRAJ ELIXIR PRIVATE LIMITED": "KTM",
+  "12118-HAROON SUPER BYKES": "KTM",
+  "12141-DEEKAY AUTOMOTIVES": "KTM",
+  "12159-GEETHA AUTO AGENCY": "KTM",
+  "12221-SAI MOTOR PLAZA": "KTM",
+  "12267-SRI SIDDHI VINAYAKA AUTOMOBILES": "KTM",
+  "12270-S & S AUTOMOTIVES": "KTM",
+  "12335-SRI RAM ENTERPRISES": "KTM",
+  "12353-STANDARD AUTOMOBILES": "KTM",
+  "12354-POPULAR MOTOR CORPORATION": "KTM",
+  "12362-SUPREME AUTO DEALERS PVT LTD": "KTM",
+  "12371-M.G.B. MOTOR & AUTO AGENCIES": "KTM",
+  "12374-CHANNAMMA MOTORS": "KTM",
+  "12381-KALYANI MOTORS": "KTM",
+  "12382-AMBA AUTO SALES AND SERVICES": "KTM",
+  "12398-SAI MOTOR PLAZA": "KTM",
+  "12399-VKG BAJAJ": "KTM",
+  "12403-HAROON MOTORS": "KTM",
+  "12405-ABHINANDAN MOTORS PVT LTD": "KTM",
+  "12433-SUPREME AUTO DEALERS PVT LTD": "KTM",
+  "12630-KAIZEN AUTOMOTIVES": "KTM",
+  "12642-YASHASWINI BIKES": "KTM",
+  "12648-TIRUMALA AUTOMOTIVES": "KTM",
+  "12806-SRI VENKATESWARA MOTOCORP": "KTM",
+  "12836-SREE NANDI MOTORS": "KTM",
+  "12994-SRI RAM ENTERPRISES": "KTM",
+  "13255-VARUN MOTORS PRIVATE LIMITED": "KTM",
+  "13258-VARUN MOTORS PRIVATE LIMITED": "KTM",
+  "13259-VARUN MOTORS PRIVATE LIMITED": "KTM",
+  "13260-VARUN MOTORS PRIVATE LIMITED": "KTM",
+  "13261-VARUN MOTORS PRIVATE LIMITED": "KTM",
+  "14252-TIRUMALA AUTOMOTIVES": "KTM",
+  "12147-VARUN MOTORS": "KTM",
+  "12269-ROCKLINE AUTMOBILES": "KTM",
+  "12288-SNR Motors": "KTM",
+  "12356-SAI AUTOMOBILES": "KTM",
+  "12370-KAMATH MOTORS": "KTM",
+  "12391-JAGAJAMPI AUTO PVT LTD": "KTM",
+  "12396-JAIN MOTORS": "KTM",
+  "12413-VARUN MOTORS": "KTM",
+  "12418-VARUN MOTORS": "KTM",
+  "12435-VARUN MOTORS": "KTM",
+  "12440-VARUN MOTORS": "KTM",
+  "12442-KHIVRAJ MOTORS": "KTM",
+  "12623-SAI AUTOMOBILES": "KTM",
+  "12668-SNR MOTORS": "KTM",
+  "12706-VARUN MOTORS": "KTM",
+  "12713-VAISHALI TRADING CORPORATION": "KTM",
+  "12727-BHAGYA AUTO": "KTM",
+  "12819-VARUN MOTORS": "KTM",
+  "12935-ESSENCEA AUTOMOTIVE PVT LTD": "KTM",
+  "13533-KEERTHI": "TRM",
+  "13536-RETRO MOTORCYCLES LLP": "TRM",
+  "13592-SRI VINAYAKA MOBIKES PRIVATE LIMITE": "TRM",
+  "14123-RETRO MOTORCYCLES LLP": "TRM",
+  "14153-BIJJARGI BAJAJ": "TRM",
+  "14164-POPULAR MOTOR CORPORATION": "TRM",
+  "14179-SUPREME AUTO DEALERS PRIVATE LIMITE": "TRM",
+  "14191-KHIVRAJ ELIXIR PRIVATE LIMITED": "TRM",
+  "13535-PVR TRIUMPH": "TRM",
+  "13591-AUTOGENIKA A UNIT OF KHIVRAJ ELIXIR": "TRM",
+  "12266-YAAZHINIY MOTORS": "KTM",
+  "12342-K V R MOTORS": "KTM",
+  "12377-ZAIN MOTORS": "KTM",
+  "12386-AKASH BAJAJ": "KTM",
+  "12388-PRINCE HARDWARE": "KTM",
+  "12392-POPULAR MOTOR CORPORATION": "KTM",
+  "12401-R. K. MOTORS": "KTM",
+  "12427-KVR BIKES - A Unit under KVR AUTOMO": "KTM",
+  "12428-KVR AUTOMOBILES PVT LTD": "KTM",
+  "12573-NALLI MOTORS": "KTM",
+  "12665-VETRIVEL MOTORS": "KTM",
+  "12691-JAILAXMI AGENCIESS": "KTM",
+  "12707-G.B.MOTORS": "KTM",
+  "12760-VISHNU RACING MOTORS": "KTM",
+  "12807-KRISHNAA AUTOS": "KTM",
+  "13177-SARATHY BIKES PVT LTD": "KTM",
+  "11913-RK Motors": "KTM",
+  "12166-ATHEN AUTOMOBILES": "KTM",
+  "12173-Roja Autos": "KTM",
+  "12323-JAI AUTOMOBILES": "KTM",
+  "12340-JAI AUTOS": "KTM",
+  "12355-POPULAR MOTOR CORPORATION": "KTM",
+  "12360-SUSEE SCOOTER CENTRE": "KTM",
+  "12376-SRIJAI AUTOS PRIVATE LIMITED": "KTM",
+  "12380-K V R VEHICLES": "KTM",
+  "12394-AAKASH AUTOMOBILES PVT LTD": "KTM",
+  "12414-KHIVRAJ AUTOMOBILES & INFRASTRUC": "KTM",
+  "12487-JAILAXMI AGENCIESS": "KTM",
+  "12488-Sri Vasa Autos": "KTM",
+  "12559-ATHEN AUTOMOBILES": "KTM",
+  "12629-Arasanautos": "KTM",
+  "12690-Shanmugam Motors SK Raman-KTM": "KTM",
+  "12738-POPULAR MOTOR CORPORATION": "KTM",
+  "12809-EAGLE MOTORS": "KTM",
+  "12810-EAGLE MOTORS": "KTM",
+  "12946-ST PATRICK MOTORS": "KTM",
+  "12975-RK MOTORS": "KTM",
+  "12981-POONTHOTTATHIL MOTORS": "KTM",
+  "12982-JKB MOTORS": "KTM",
+  "12985-AADHITHEYA BIKES": "KTM",
+  "13010-GUSTO RACING": "KTM",
+  "13600-AAKASH AUTOMOBILES PRIVATE LIMITED": "KTM",
+  "13623-PIONEER MOTORS": "KTM",
+  "11484-ARCHANA MOTORS": "KTM",
+  "12036-AQUATERRA AUTO LLP": "KTM",
+  "12049-VICTORY MOTOR CORPORATION": "KTM",
+  "12103-JOYEES INTERNATIONAL": "KTM",
+  "12181-EAGLE MOTORS": "KTM",
+  "12211-ARAV MOTOR CORP PVT LTD": "KTM",
+  "12212-PAAVAI MOTORS": "KTM",
+  "12319-KLN AUTOMOBILES PVT LTD": "KTM",
+  "12329-ARASU AUTOS": "KTM",
+  "12339-GEO AUTOMOBILES": "KTM",
+  "12402-SARATHY MOTORS": "KTM",
+  "12420-V M S MOTORS": "KTM",
+  "12423-MOHTEEJ AUTOMOBILES": "KTM",
+  "12448-DEEDI AUTOMOBILES": "KTM",
+  "12565-SRI SHAI AUTOS": "KTM",
+  "12598-Sri Vasa Autos": "KTM",
+  "12703-A.V.AUTOMOBILES": "KTM",
+  "12772-EAGLE MOTORS": "KTM",
+  "12944-NAS MOTORS": "KTM",
+  "12973-POPULAR MOTOR CORPORATION": "KTM",
+  "13541-SYAMADYNAMIC MOTORCYCLES PVT LTD": "TRM",
+  "13596-PIONEER MOTORS": "TRM",
+  "13625-SRIJAI AUTOS PRIVATE LIMITED": "TRM",
+  "13626-SARATHY BIKES PVT. LTD": "TRM",
+  "13627-RK Motors": "TRM",
+  "13658-KVR AUTOMOBILES PRIVATE LIMITED": "TRM",
+  "14130-NALLI MOTORS": "TRM",
+  "14175-AAKASH AUTOMOBILES PRIVATE LIMITED": "TRM",
+  "14182-AKASH BAJAJ": "TRM",
+  "14188-KHIVRAJ ELIXIR PRIVATE LIMITED": "TRM",
+  "14254-KING AUTO PRIVATE LIMITED": "TRM",
+  "13528-AUTOGENIKA (A UNIT OF KHIVRAJ ELIXI": "TRM",
+  "12206-RAJ MOTORS": "KTM",
+  "12322-TRIPUR AUTO": "KTM",
+  "12336-AAKAR MOTORS": "KTM",
+  "12383-FRONTIER MOTORS": "KTM",
+  "12631-KATARIA MOTORS": "KTM",
+  "12649-NA AUTOLINK": "KTM",
+  "12677-MARK AUTOMOTIVES": "KTM",
+  "12688-SETH MOTORS": "KTM",
+  "12824-KENA AUTO": "KTM",
+  "12883-PRIDE AUTOMOBILES": "TRM",
+  "12934-RAM AUTO": "KTM",
+  "12984-A G CORPORATIONS": "KTM",
+  "13136-PANDURANG AUTOMOTIVES": "KTM",
+  "13142-STAR AUTOMOTIVE": "KTM",
+  "13530-B U BHANDARI AUTO PRIVATE LIMITED": "TRM",
+  "14152-PAGARIYA AUTO CENTRE LLP": "KTM",
+  "10732-AUTO INDIA": "KTM",
+  "12087-KAMDA AUTO RIDERS": "KTM",
+  "12160-NIS AUTO": "KTM",
+  "12162-AHUJA AUTOMOBILES": "KTM",
+  "12168-PRIDE AUTOMOBILES": "KTM",
+  "12238-VENKATESH MOTORS": "KTM",
+  "12326-ARUN AUTOMOBILES": "KTM",
+  "12352-SURJEET AUTO AGENCY": "KTM",
+  "12366-VANDANA AUTO": "KTM",
+  "12372-SURYODAY MOTORS PVT LTD": "KTM",
+  "12373-MAHESH SALES CORPORATION": "KTM",
+  "12375-AHERKAR AUTOMOBILES": "KTM",
+  "12390-SAI SERVICE PRIVATE LIMITED": "KTM",
+  "12397-GUJARAT MOTORS PVT LTD": "KTM",
+  "12432-PAGARIYA AUTO CENTRE": "KTM",
+  "12439-WASAN & SONS": "KTM",
+  "12441-A.S.MOTORS": "KTM",
+  "12466-CRYSTAL TRADELINKS": "KTM",
+  "12486-SARBANI MOTORS": "KTM",
+  "12521-PATNI AUTOMOBILES": "KTM",
+  "12530-MAHAVIR AUTOMOBILES": "KTM",
+  "12552-ASHOK AUTOTECH INDIA PVT LTD": "KTM",
+  "12601-Bhaagyoday motors": "KTM",
+  "12606-SAKAL AUTO": "KTM",
+  "12639-ORANGE AUTOMOTIVE": "KTM",
+  "12660-LORDS GRAND": "KTM",
+  "12746-S K AUTOMOBILES": "KTM",
+  "12774-ANJUSHREE AUTOMOBILE": "KTM",
+  "12778-ORANGE MOTORRAD": "KTM",
+  "12796-SUNIL SCOOTERS PVT LTD": "KTM",
+  "12857-SHRESTH AUTO CENTER": "KTM",
+  "12861-SHASTRI AUTO": "KTM",
+  "12933-ANJUSHREE AUTOMOBILES": "KTM",
+  "13002-AKSHAY AUTOMOBILES": "KTM",
+  "13013-RAJYOG AUTOMOBILES": "KTM",
+  "13037-AMIN AUTO AGENCIES": "KTM",
+  "13059-NAMITA MOTORS": "KTM",
+  "13118-J C MOTOPLEX": "KTM",
+  "13162-OM ADVANCE AUTOMOBILE PVT LTD": "KTM",
+  "13252-UNIQUE AUTOMOBILES PVT LTD": "KTM",
+  "13335-MALPANI BAJAJ": "KTM",
+  "13469-SHISA AUTO": "KTM",
+  "13560-OM ADVANCE AUTOMOBILES PVT.LTD.": "KTM",
+  "13616-GUJARAT MOTORS PVT. LTD.": "KTM",
+  "14284-B U BHANDARI AUTO PRIVATE LIMITED": "KTM",
+  "12161-PATHAN INDUSTRIAL AGENCIES": "KTM",
+  "12175-STAR AUTOMOTIVES": "KTM",
+  "12178-MANASH MOTORS": "KTM",
+  "12184-Shah Autolinks LLP": "KTM",
+  "12201-NAIK NIMBALKAR AUTO": "KTM",
+  "12239-HERAMMBA AUTOMOBILES PVT LTD": "KTM",
+  "12246-Garve Developments": "KTM",
+  "12253-C and C Company": "KTM",
+  "12254-SAI AUTO": "KTM",
+  "12293-AadiVenoo Motors": "KTM",
+  "12315-AMIN AUTOMOBILES": "KTM",
+  "12316-K M Automotives": "KTM",
+  "12338-GUPTA & SONS MOTORS (P) LTD": "KTM",
+  "12357-SITARA MOTORS PVT LTD": "KTM",
+  "12407-GURU GOBIND AUTOMOBILES": "KTM",
+  "12421-HOLEYDAYS AUTO SERVICE": "KTM",
+  "12437-GALLOPS AUTOMOBILES PRIVATE LIMITED": "KTM",
+  "12443-SAI SERVICE AGENCY - BOMBAY": "KTM",
+  "12446-KANCHAN AUTO PVT LTD": "KTM",
+  "12447-GURU GOBIND AUTOMOBILES": "KTM",
+  "12566-MANASH MOTORS": "KTM",
+  "12567-PB NARSALE WHEELS PVT LTD": "KTM",
+  "12574-DV Automobiles": "KTM",
+  "12653-KALESHWAR MOTORS": "KTM",
+  "12689-SIXTH GEAR": "KTM",
+  "12704-TORNA ENDEAVOURS PVT LTD": "KTM",
+  "12731-AKSHAY AUTOMOBILES": "KTM",
+  "12737-RAJ AUTOMOTIVE": "KTM",
+  "12747-STAR AUTOMOTIVES": "KTM",
+  "12759-SHREENIWAS MOTORS": "KTM",
+  "12771-RUTUJA AUTO PVT LTD": "KTM",
+  "12814-Platinum Motors": "KTM",
+  "12921-MAHALAXMI MOTORS": "KTM",
+  "12922-MANDAR MOTORS": "KTM",
+  "12974-AVTAR AGENCY": "KTM",
+  "12976-HERAMMBA AUTO": "KTM",
+  "12998-KARTAVYA AUTO": "KTM",
+  "13008-SHANTANU AUTOMOTIVE": "KTM",
+  "13128-GEO TRANS INTERNATIONAL PVT LTD": "KTM",
+  "13154-Giriraj Enterprises Automobiles": "KTM",
+  "13155-ROYAL MOTORS": "KTM",
+  "13193-SWASTIK MOTORS NX": "KTM",
+  "13537-RIYA AUTOTECH PRIVATE LIMITED": "TRM",
+  "13538-SHAMAN MOTORS PRIVATE LIMITED": "TRM",
+  "13595-Unique Automobiles Pvt. Ltd": "TRM",
+  "13647-ARUN AUTOMOBILES": "TRM",
+  "13708-SAI SERVICE PRIVATE LIMITED": "TRM",
+  "13777-SUKHI DS AUTOMOBILES PRIVATE LIMITE": "TRM",
+  "14035-FRONTIER MOTORS": "TRM",
+  "14124-VALIANT MOTORS": "TRM",
+  "14148-GOA SUPER MOTO & AUTOMOBILES LLP": "TRM",
+  "14344-EMINENT MOBILITY": "TRM",
+  "14420-GUJARAT MOTORS PRIVATE LIMITED": "TRM",
+  "14422-PRIDE AUTOMOBILE": "TRM",
+  "13529-B U BHANDARI AUTO PRIVATE LIMITED": "TRM",
+  "13669-SALASAR AUTOHAUS PROBIKING PVT LTD": "TRM"
+};
+
+const BU_TABS = [
+  { key:"KTM", cls:"ktm", label:"KTM",     title:"KTM",     sub:"Staff satisfaction \u2014 KTM dealerships" },
+  { key:"TRM", cls:"trm", label:"Triumph", title:"Triumph", sub:"Staff satisfaction \u2014 Triumph dealerships" }
+];
+
+let activeBU = "KTM";
+
+function buOf(dealer){
+  return BU_MAPPING[String(dealer == null ? "" : dealer).trim()] || "";
+}
+
+function currentTab(){
+  for(var i=0;i<BU_TABS.length;i++){ if(BU_TABS[i].key === activeBU) return BU_TABS[i]; }
+  return BU_TABS[0];
+}
+
+function buRecords(key){
+  return allRecords.filter(function(r){ return buOf(r.dealer) === key; });
+}
+
 async function loadAndRenderResults(wrap, loadingEl){
-  let records = [];
   try{
     const res = await fetch(API_URL + "?code=" + encodeURIComponent(enteredCode));
     const out = await res.json();
     if(!out || out.ok !== true) throw new Error("load failed");
-    records = out.records || [];
+    allRecords = out.records || [];
   }catch(e){
     loadingEl.textContent = "Could not load results right now.";
     return;
@@ -1940,11 +2512,207 @@ async function loadAndRenderResults(wrap, loadingEl){
 
   loadingEl.remove();
 
-  if(records.length === 0){
+  if(allRecords.length === 0){
     const empty = document.createElement("div");
     empty.className = "card empty";
     empty.textContent = "No responses yet. Once dealership staff submit the survey, results will appear here.";
     wrap.appendChild(empty);
+    return;
+  }
+
+  const tabs  = document.createElement("div");
+  tabs.className = "bu-tabs";
+  const head  = document.createElement("div");
+  const scope = document.createElement("div");
+  const bar   = document.createElement("div");
+  const body  = document.createElement("div");
+  scope.appendChild(bar);
+  scope.appendChild(body);
+  wrap.appendChild(tabs);
+  wrap.appendChild(head);
+
+  // responses whose dealership is absent from BU_MAPPING belong to neither tab
+  const unmapped = allRecords.filter(function(r){ return !buOf(r.dealer); }).length;
+  if(unmapped){
+    const note = document.createElement("p");
+    note.className = "bu-note";
+    note.textContent = unmapped + " response" + (unmapped > 1 ? "s" : "") +
+      " could not be matched to a business unit and are excluded from both tabs.";
+    wrap.appendChild(note);
+  }
+
+  wrap.appendChild(scope);
+
+  function paintTabs(){
+    tabs.innerHTML = "";
+    BU_TABS.forEach(function(tb){
+      const b = document.createElement("button");
+      b.className = "bu-tab " + tb.cls + (activeBU === tb.key ? " active" : "");
+      b.textContent = tb.label + " (" + buRecords(tb.key).length + ")";
+      b.onclick = function(){
+        if(activeBU === tb.key) return;
+        activeBU = tb.key;
+        // dealerships never overlap between BUs, so carrying filters over would blank the view
+        dashFilters = { region:"", asm:"", dealer:"", designation:"", tenure:"" };
+        paintTab();
+      };
+      tabs.appendChild(b);
+    });
+  }
+
+  function paintTab(){
+    const tb = currentTab();
+    paintTabs();
+    head.className = "bu-head " + tb.cls;
+    head.innerHTML = "";
+    const h = document.createElement("h2");
+    h.textContent = tb.title;
+    const p = document.createElement("p");
+    p.textContent = tb.sub;
+    head.appendChild(h);
+    head.appendChild(p);
+    scope.className = "bu-scope " + tb.cls;
+    renderFilterBar(bar, body);
+    drawDashboard(body);
+  }
+
+  paintTab();
+}
+
+/* ---------- filtering ---------- */
+function filteredRecords(){
+  return allRecords.filter(function(r){
+    if(buOf(r.dealer) !== activeBU) return false;
+    if(dashFilters.region      && r.region      !== dashFilters.region) return false;
+    if(dashFilters.asm         && r.asm         !== dashFilters.asm) return false;
+    if(dashFilters.dealer      && r.dealer      !== dashFilters.dealer) return false;
+    if(dashFilters.designation && r.designation !== dashFilters.designation) return false;
+    if(dashFilters.tenure      && r.tenure      !== dashFilters.tenure) return false;
+    return true;
+  });
+}
+
+/* Circle > ASM > Dealership is a hierarchy: a parent narrows its children, but a
+   child must never narrow its own parent, or picking an ASM would leave the Circle
+   list stuck on one entry. Designation and Tenure sit outside that hierarchy, so
+   they narrow — and are narrowed by — every other filter. */
+const FILTER_DESCENDANTS = {
+  region:      ["asm","dealer"],
+  asm:         ["dealer"],
+  dealer:      [],
+  designation: [],
+  tenure:      []
+};
+
+/* Options come from the data itself, so a dealership with no responses
+   never appears in the list. Every active filter except the field itself
+   (and, for Circle/ASM, its own descendants) narrows the pool. */
+function optionsFor(field){
+  const skip = {};
+  skip[field] = true;
+  (FILTER_DESCENDANTS[field] || []).forEach(function(c){ skip[c] = true; });
+
+  const pool = buRecords(activeBU).filter(function(r){
+    for(const k in dashFilters){
+      if(skip[k] || !dashFilters[k]) continue;
+      if(r[k] !== dashFilters[k]) return false;
+    }
+    return true;
+  });
+
+  const seen = {};
+  pool.forEach(function(r){ if(r[field]) seen[r[field]] = true; });
+  return Object.keys(seen).sort();
+}
+
+function renderFilterBar(bar, body){
+  bar.innerHTML = "";
+  bar.className = "card";
+  bar.style.marginBottom = "14px";
+
+  const head = document.createElement("div");
+  head.style.cssText = "font-weight:600;font-size:14px;margin-bottom:10px;";
+  head.textContent = "Filters";
+  bar.appendChild(head);
+
+  const grid = document.createElement("div");
+  grid.style.cssText = "display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px;";
+
+  const defs = [
+    { key:"region",      label:"Circle" },
+    { key:"asm",         label:"ASM" },
+    { key:"dealer",      label:"Dealership" },
+    { key:"designation", label:"Designation" },
+    { key:"tenure",      label:"Tenure" }
+  ];
+
+  defs.forEach(function(d){
+    const cell = document.createElement("div");
+    const lab = document.createElement("label");
+    lab.style.cssText = "display:block;font-size:12px;color:#6b7280;margin-bottom:4px;";
+    lab.textContent = d.label;
+    cell.appendChild(lab);
+
+    const sel = document.createElement("select");
+    sel.className = "input";
+    sel.style.width = "100%";
+    const opts = optionsFor(d.key);
+    sel.appendChild(new Option("All (" + opts.length + ")", ""));
+    opts.forEach(function(v){
+      const o = new Option(v, v);
+      if(dashFilters[d.key] === v) o.selected = true;
+      sel.appendChild(o);
+    });
+    sel.onchange = function(e){
+      dashFilters[d.key] = e.target.value;
+      // clearing or changing a parent must reset its children
+      if(d.key === "region"){ dashFilters.asm = ""; dashFilters.dealer = ""; }
+      if(d.key === "asm"){ dashFilters.dealer = ""; }
+      renderFilterBar(bar, body);
+      drawDashboard(body);
+    };
+    cell.appendChild(sel);
+    grid.appendChild(cell);
+  });
+  bar.appendChild(grid);
+
+  const foot = document.createElement("div");
+  foot.style.cssText = "margin-top:10px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;";
+  const count = document.createElement("span");
+  count.style.cssText = "font-size:13px;color:#6b7280;";
+  const n = filteredRecords().length;
+  const buTotal = buRecords(activeBU).length;
+  count.textContent = "Showing " + n + " of " + buTotal + " " + currentTab().label + " responses";
+  foot.appendChild(count);
+
+  const anyOn = Object.keys(dashFilters).some(function(k){ return dashFilters[k]; });
+  if(anyOn){
+    const reset = document.createElement("button");
+    reset.className = "btn ghost";
+    reset.style.cssText = "padding:4px 12px;font-size:13px;";
+    reset.textContent = "Clear filters";
+    reset.onclick = function(){
+      dashFilters = { region:"", asm:"", dealer:"", designation:"", tenure:"" };
+      renderFilterBar(bar, body);
+      drawDashboard(body);
+    };
+    foot.appendChild(reset);
+  }
+  bar.appendChild(foot);
+}
+
+/* ---------- dashboard ---------- */
+function drawDashboard(wrap){
+  wrap.innerHTML = "";
+  const records = filteredRecords();
+
+  if(records.length === 0){
+    const none = document.createElement("div");
+    none.className = "card empty";
+    none.textContent = buRecords(activeBU).length === 0
+      ? "No " + currentTab().label + " responses yet."
+      : "No " + currentTab().label + " responses match these filters.";
+    wrap.appendChild(none);
     return;
   }
 
@@ -2081,13 +2849,13 @@ async function loadAndRenderResults(wrap, loadingEl){
 }
 
 function exportCSV(records){
-  const cols = ["ts","technicianName","age","region","asm","dealer","designation","qualification","tenure","salary",
+  const cols = ["ts","technicianName","age","region","asm","dealer","bu","designation","qualification","tenure","salary",
     "q5","q6","q9","q11","q13","q16","q20",
     "q21","q22","q24","q26","q27","q30"];
   const rows = [cols.join(",")];
   records.forEach(r=>{
     const line = cols.map(c=>{
-      let v = r[c];
+      let v = (c === "bu") ? buOf(r.dealer) : r[c];
       if(Array.isArray(v)) v = v.join(" | ");
       if(v===undefined || v===null) v = "";
       v = String(v).replace(/"/g,'""');
@@ -2099,7 +2867,7 @@ function exportCSV(records){
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = "pro-biking-staff-satisfaction-responses.csv";
+  a.download = "pro-biking-staff-satisfaction-" + activeBU.toLowerCase() + "-responses.csv";
   document.body.appendChild(a);
   a.click();
   a.remove();
