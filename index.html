@@ -262,7 +262,7 @@
   .empty{font-size:13.5px;color:var(--ink-soft);padding:20px 0;}
 
   /* ===== Business-unit tabs (results dashboard only) ===== */
-  .bu-tabs{display:flex;gap:6px;}
+  .bu-tabs{display:flex;gap:6px;margin-bottom:14px;}
   .bu-tab{
     flex:1;
     font-family:'Space Grotesk', sans-serif;
@@ -281,24 +281,107 @@
   .bu-tab.active{color:#ffffff;border-color:transparent;}
   .bu-tab.active.ktm{background:#FF6600;}
   .bu-tab.active.trm{background:#000000;}
-  .bu-head{
-    color:#ffffff;
-    border-radius:0 0 var(--radius) var(--radius);
-    padding:16px 18px;
-    margin-bottom:14px;
-  }
-  .bu-head.ktm{background:#FF6600;}
-  .bu-head.trm{background:#000000;}
-  .bu-head h2{
-    font-family:'Space Grotesk', sans-serif;
-    font-size:19px;font-weight:600;margin:0 0 3px;color:#ffffff;
-  }
-  .bu-head p{margin:0;font-size:13px;color:rgba(255,255,255,0.85);}
-  .bu-scope.ktm{--accent:#FF6600;}
-  .bu-scope.trm{--accent:#000000;}
   .bu-scope .bar-fill{background:var(--accent);}
   .bu-scope .kpi .num{color:var(--accent);}
   .bu-note{font-size:12.5px;color:var(--ink-soft);margin:0 0 14px;}
+
+  /* ===== executive dashboard ===== */
+  .wrap.dash{max-width:1180px;}
+  .bu-scope.ktm{--accent:#FF6600;--wash:#FFF1E6;}
+  .bu-scope.trm{--accent:#000000;--wash:#F0F0F0;}
+
+  .dash-sheet{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:22px 24px;
+    margin-bottom:14px;
+  }
+  .dash-head{display:flex;justify-content:space-between;align-items:flex-start;gap:18px;flex-wrap:wrap;margin-bottom:20px;}
+  .dash-wordmark{
+    font-family:'Space Grotesk', sans-serif;
+    font-weight:700;font-size:38px;line-height:1;
+    letter-spacing:-0.02em;color:var(--accent);
+  }
+  .dash-sub{font-size:14px;color:var(--ink-soft);margin-top:10px;}
+  .dash-meta{text-align:right;font-size:13.5px;font-weight:600;color:var(--accent);}
+  .dash-meta small{display:block;margin-top:5px;font-size:12px;font-weight:400;font-style:italic;color:var(--ink-soft);}
+
+  .kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:22px;}
+  .kpi-box{background:var(--wash);border-radius:10px;padding:16px 12px;text-align:center;}
+  .kpi-box .v{font-family:'Space Grotesk', sans-serif;font-size:29px;font-weight:700;line-height:1.1;color:var(--accent);}
+  .kpi-box .k{font-size:12.5px;line-height:1.4;color:var(--ink-soft);margin-top:7px;}
+  .kpi-box.warn{background:#FDECEA;}
+  .kpi-box.warn .v{color:#C0392B;}
+
+  .dash-cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:26px;align-items:start;}
+  .dash-sec-title{
+    font-family:'Space Grotesk', sans-serif;
+    font-size:12.5px;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;
+    color:var(--accent);margin:0 0 13px;
+  }
+  .dash-sec-title.tight{margin-top:22px;}
+  .dash-sec-title .sec-note{text-transform:none;letter-spacing:0;font-weight:500;color:var(--ink-soft);}
+
+  .rt{width:100%;border-collapse:collapse;font-size:13px;}
+  .rt th{background:var(--accent);color:#fff;text-align:left;padding:8px 10px;font-size:12.5px;font-weight:600;}
+  .rt th:not(:first-child){text-align:right;}
+  .rt td{padding:8px 10px;border-bottom:1px solid var(--line);}
+  .rt tbody tr:nth-child(even) td{background:rgba(0,0,0,0.025);}
+  .rt td.num{text-align:right;}
+  .rt td.good{text-align:right;font-weight:600;color:#1B7A3E;}
+  .rt td.mid{text-align:right;font-weight:600;color:var(--accent);}
+  .rt td.bad{text-align:right;font-weight:600;color:#C0392B;}
+  .rt-note{margin:11px 0 0;font-size:12px;font-style:italic;line-height:1.5;color:var(--accent);}
+
+  .drv{display:grid;grid-template-columns:auto minmax(0,1fr);gap:9px 10px;align-items:center;font-size:13px;}
+  .drv .dl{text-align:right;line-height:1.25;}
+  .drv .dtrack{display:flex;align-items:center;gap:8px;height:20px;}
+  .drv .dfill{height:100%;border-radius:2px;flex:0 0 auto;}
+  .drv .dv{font-size:12.5px;color:var(--ink-soft);white-space:nowrap;}
+
+  .ret-wrap{display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
+  .legend{font-size:12px;line-height:1.6;}
+  .legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:7px;vertical-align:middle;}
+  .legend-row{display:flex;flex-wrap:wrap;gap:6px 18px;margin-bottom:16px;}
+
+  .reason-row{display:flex;justify-content:space-between;gap:12px;font-size:13px;padding:6px 0;}
+  .reason-row b{color:var(--accent);font-weight:600;white-space:nowrap;}
+  .sd-foot{margin:10px 0 0;font-size:11.5px;font-style:italic;color:var(--ink-soft);}
+  .sd-empty{margin:0;font-size:13px;color:var(--ink-soft);}
+
+  .sd-title{font-size:13px;font-weight:600;margin-bottom:11px;}
+  .sd-row{margin-bottom:11px;}
+  .sd-head{display:flex;justify-content:space-between;gap:10px;font-size:12.5px;margin-bottom:4px;}
+  .sd-head span:last-child{color:var(--ink-soft);}
+  .stack{display:flex;height:20px;border-radius:4px;overflow:hidden;background:var(--line);}
+  .stack span{display:block;height:100%;}
+
+  .takeaway{
+    background:var(--wash);
+    border:1px solid var(--accent);
+    border-radius:12px;
+    padding:15px 18px;margin-bottom:14px;
+    font-size:13.5px;line-height:1.6;
+  }
+  .takeaway b{color:var(--accent);letter-spacing:0.03em;}
+
+  .cmt{border-bottom:1px solid var(--line);padding:10px 0;}
+  .cmt:last-child{border-bottom:none;}
+  .cmt p{margin:0 0 4px;font-size:13px;line-height:1.5;}
+  .cmt span{font-size:11.5px;color:var(--ink-soft);}
+
+  .dash-toggles{display:flex;gap:16px;flex-wrap:wrap;align-items:center;margin-top:10px;padding-top:10px;border-top:1px solid var(--line);}
+  .dash-toggles label{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--ink-soft);cursor:pointer;}
+  .dash-toggles input{width:auto;margin:0;}
+
+  @media (max-width:720px){
+    .dash-sheet{padding:18px 16px;}
+    .dash-meta{text-align:left;}
+    .dash-wordmark{font-size:30px;}
+    .drv{grid-template-columns:minmax(0,1fr);}
+    .drv .dl{text-align:left;font-weight:600;margin-bottom:-6px;}
+  }
   @media (max-width:420px){
     .hero h1{font-size:22px;}
     .wrap{padding:20px 14px 70px;}
@@ -1960,13 +2043,19 @@ function renderHeaderResults(){
   h.appendChild(b2);
   const btn = document.createElement("button");
   btn.textContent = "Back to survey";
-  btn.onclick = ()=>{ state.view="form"; state.step=0; state.answers={}; render(); };
+  btn.onclick = ()=>{
+    const app = document.getElementById("app");
+    if(app) app.classList.remove("dash");   // the form stays at its narrow width
+    state.view="form"; state.step=0; state.answers={}; render();
+  };
   h.appendChild(btn);
   return h;
 }
 
 let allRecords  = [];
 let dashFilters = { region:"", asm:"", dealer:"", designation:"", tenure:"" };
+// Key takeaway and open comments are optional panels, toggled from the filter bar.
+let dashOptions = { takeaway:true, comments:false };
 
 /* ---------- business unit (KTM / Triumph) ----------
    Source: Dealer_Code__BU_Mapping.xlsx. Dealer names below are byte-identical
@@ -2480,8 +2569,8 @@ const BU_MAPPING = {
 };
 
 const BU_TABS = [
-  { key:"KTM", cls:"ktm", label:"KTM",     title:"KTM",     sub:"Staff satisfaction \u2014 KTM dealerships" },
-  { key:"TRM", cls:"trm", label:"Triumph", title:"Triumph", sub:"Staff satisfaction \u2014 Triumph dealerships" }
+  { key:"KTM", cls:"ktm", label:"KTM",     title:"KTM",     wordmark:"KTM",     sub:"Staff satisfaction \u2014 KTM dealerships" },
+  { key:"TRM", cls:"trm", label:"Triumph", title:"Triumph", wordmark:"TRIUMPH", sub:"Staff satisfaction \u2014 Triumph dealerships" }
 ];
 
 let activeBU = "KTM";
@@ -2520,16 +2609,17 @@ async function loadAndRenderResults(wrap, loadingEl){
     return;
   }
 
+  const app = document.getElementById("app");
+  if(app) app.classList.add("dash");   // the summary needs more room than the form
+
   const tabs  = document.createElement("div");
   tabs.className = "bu-tabs";
-  const head  = document.createElement("div");
   const scope = document.createElement("div");
   const bar   = document.createElement("div");
   const body  = document.createElement("div");
   scope.appendChild(bar);
   scope.appendChild(body);
   wrap.appendChild(tabs);
-  wrap.appendChild(head);
 
   // responses whose dealership is absent from BU_MAPPING belong to neither tab
   const unmapped = allRecords.filter(function(r){ return !buOf(r.dealer); }).length;
@@ -2563,14 +2653,6 @@ async function loadAndRenderResults(wrap, loadingEl){
   function paintTab(){
     const tb = currentTab();
     paintTabs();
-    head.className = "bu-head " + tb.cls;
-    head.innerHTML = "";
-    const h = document.createElement("h2");
-    h.textContent = tb.title;
-    const p = document.createElement("p");
-    p.textContent = tb.sub;
-    head.appendChild(h);
-    head.appendChild(p);
     scope.className = "bu-scope " + tb.cls;
     renderFilterBar(bar, body);
     drawDashboard(body);
@@ -2699,143 +2781,445 @@ function renderFilterBar(bar, body){
     foot.appendChild(reset);
   }
   bar.appendChild(foot);
+
+  const toggles = document.createElement("div");
+  toggles.className = "dash-toggles";
+  [ { key:"takeaway", label:"Key takeaway" },
+    { key:"comments", label:"Open comments" } ].forEach(function(o){
+    const lab = document.createElement("label");
+    const cb = document.createElement("input");
+    cb.type = "checkbox";
+    cb.checked = !!dashOptions[o.key];
+    cb.onchange = function(e){
+      dashOptions[o.key] = e.target.checked;
+      drawDashboard(body);
+    };
+    lab.appendChild(cb);
+    lab.appendChild(document.createTextNode(o.label));
+    toggles.appendChild(lab);
+  });
+  bar.appendChild(toggles);
 }
 
 /* ---------- dashboard ---------- */
+
+function esc(s){
+  return String(s == null ? "" : s)
+    .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;").replace(/'/g,"&#39;");
+}
+
+function fmtN(n){ return Number(n).toLocaleString("en-IN"); }
+function plural(n, word){ return fmtN(n) + " " + word + (n === 1 ? "" : "s"); }
+function fmtPct(v, dp){ return v === null ? "\u2013" : v.toFixed(dp === undefined ? 1 : dp) + "%"; }
+
+/* Ordered option list for a field, taken from the form definition so the
+   ordering is the survey's own (low-to-high), never alphabetical. */
+function fieldOptions(id){
+  for(let i=0;i<STEPS.length;i++){
+    const fs = STEPS[i].fields || [];
+    for(let j=0;j<fs.length;j++) if(fs[j].id === id) return (fs[j].options || []).slice();
+  }
+  return [];
+}
+
+function fieldDef(id){
+  for(let i=0;i<STEPS.length;i++){
+    const fs = STEPS[i].fields || [];
+    for(let j=0;j<fs.length;j++) if(fs[j].id === id) return fs[j];
+  }
+  return null;
+}
+
+/* Top-2-Box: share of respondents picking either of the two best options on
+   that question's scale. Blank answers are excluded from the base, so a
+   question nobody answered reports no data rather than 0%. */
+function topBox(records, qid, boxes){
+  const f = fieldDef(qid);
+  if(!f || !f.scale) return null;
+  const top = f.scale.slice(0, boxes || 2);
+  let base = 0, hit = 0;
+  records.forEach(function(r){
+    const v = r[qid];
+    if(!v || f.scale.indexOf(v) === -1) return;
+    base++;
+    if(top.indexOf(v) !== -1) hit++;
+  });
+  return base ? (hit / base) * 100 : null;
+}
+
+/* The nine satisfaction drivers, in the order they are asked. Respect (q16)
+   is deliberately absent: it is surfaced as a headline KPI instead. */
+const DRIVERS = [
+  { id:"q6",  label:"Salary" },
+  { id:"q24", label:"Incentive Structure" },
+  { id:"q11", label:"Benefits (PF/ESI)" },
+  { id:"q9",  label:"Workload" },
+  { id:"q13", label:"Basic Facilities" },
+  { id:"q22", label:"Career Growth" },
+  { id:"q5",  label:"Overall Job" },
+  { id:"q20", label:"Tools / Equip. / PPE" },
+  { id:"q21", label:"Technical Training" }
+];
+
+const RETENTION_COLORS = {
+  "Definitely continue": "#1B7A3E",
+  "Probably continue"  : "#6BBF8A",
+  "Not sure"           : "#E8C063",
+  "Probably leave"     : "#E07B39",
+  "Definitely leave"   : "#C0392B"
+};
+
+/* Low-to-high ramps for the salary bands, one per business unit. */
+const SALARY_RAMP = {
+  KTM: ["#FCE0CB","#F9BE93","#F49A5C","#EE762B","#CC5A11","#8F3D06"],
+  TRM: ["#E4E4E4","#C2C2C2","#9B9B9B","#6E6E6E","#3F3F3F","#111111"]
+};
+
+function donutSVG(segments){
+  const r = 52, cx = 68, cy = 68, w = 26;
+  const c = 2 * Math.PI * r;
+  let off = 0, parts = "";
+  segments.forEach(function(s){
+    const len = c * s.frac;
+    if(len <= 0) return;
+    parts += '<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="none" stroke="'+s.color+'"'
+          +  ' stroke-width="'+w+'" stroke-dasharray="'+len.toFixed(2)+' '+(c-len).toFixed(2)+'"'
+          +  ' stroke-dashoffset="'+(-off).toFixed(2)+'"'
+          +  ' transform="rotate(-90 '+cx+' '+cy+')"><title>'+esc(s.label)+' '+s.pct.toFixed(1)+'%</title></circle>';
+    off += len;
+  });
+  return '<svg viewBox="0 0 136 136" width="140" height="140" role="img">'+parts+'</svg>';
+}
+
+/* One 100%-stacked bar per group value, split by salary band. */
+function salaryBreakdown(records, groupField){
+  const bands = fieldOptions("salary");
+  let groups = fieldOptions(groupField);
+  // keep any value present in the data but missing from the option list
+  const extra = {};
+  records.forEach(function(r){
+    const g = r[groupField];
+    if(g && groups.indexOf(g) === -1) extra[g] = true;
+  });
+  groups = groups.concat(Object.keys(extra).sort());
+
+  return groups.map(function(g){
+    const rows = records.filter(function(r){ return r[groupField] === g && r.salary; });
+    const counts = bands.map(function(b){
+      return rows.filter(function(r){ return r.salary === b; }).length;
+    });
+    return { group:g, n:rows.length, counts:counts };
+  }).filter(function(x){ return x.n > 0; });
+}
+
+function salaryBlock(records, groupField, title, ramp){
+  const bands = fieldOptions("salary");
+  const data  = salaryBreakdown(records, groupField);
+  const box = document.createElement("div");
+
+  const h = document.createElement("div");
+  h.className = "sd-title";
+  h.textContent = title;
+  box.appendChild(h);
+
+  if(!data.length){
+    const p = document.createElement("p");
+    p.className = "sd-empty";
+    p.textContent = "No salary data for this selection.";
+    box.appendChild(p);
+    return box;
+  }
+
+  data.forEach(function(d){
+    const row = document.createElement("div");
+    row.className = "sd-row";
+    let segs = "";
+    d.counts.forEach(function(cnt, i){
+      if(!cnt) return;
+      const pct = cnt / d.n * 100;
+      segs += '<span style="width:'+pct.toFixed(2)+'%;background:'+ramp[i % ramp.length]+'"'
+           +  ' title="'+esc(bands[i])+' \u2014 '+cnt+' of '+d.n+' ('+pct.toFixed(1)+'%)"></span>';
+    });
+    row.innerHTML = '<div class="sd-head"><span>'+esc(d.group)+'</span><span>n='+d.n+'</span></div>'
+                  + '<div class="stack">'+segs+'</div>';
+    box.appendChild(row);
+  });
+  return box;
+}
+
 function drawDashboard(wrap){
   wrap.innerHTML = "";
   const records = filteredRecords();
+  const tab = currentTab();
 
   if(records.length === 0){
     const none = document.createElement("div");
     none.className = "card empty";
     none.textContent = buRecords(activeBU).length === 0
-      ? "No " + currentTab().label + " responses yet."
-      : "No " + currentTab().label + " responses match these filters.";
+      ? "No " + tab.label + " responses yet."
+      : "No " + tab.label + " responses match these filters.";
     wrap.appendChild(none);
     return;
   }
 
-  // overall index
-  const catScores = {}; CATEGORIES.forEach(c=>catScores[c]=[]);
-  let allScores = [];
-  STEPS.forEach(step=>{
-    step.fields.forEach(f=>{
-      if(f.type==="scale" && f.cat){
-        records.forEach(rec=>{
-          const val = rec[f.id];
-          if(val){
-            const s = scaleScore(f.scale, val);
-            if(s!==null){ catScores[f.cat].push(s); allScores.push(s); }
-          }
-        });
-      }
+  const sheet = document.createElement("div");
+  sheet.className = "dash-sheet";
+  wrap.appendChild(sheet);
+
+  const ramp = SALARY_RAMP[activeBU] || SALARY_RAMP.KTM;
+
+  /* ----- header ----- */
+  const dealers = {}, regions = {};
+  records.forEach(function(r){
+    if(r.dealer) dealers[r.dealer] = true;
+    if(r.region) regions[r.region] = true;
+  });
+  const stamp = new Date().toLocaleDateString("en-US", { month:"short", year:"numeric" });
+
+  const head = document.createElement("div");
+  head.className = "dash-head";
+  head.innerHTML =
+      '<div>'
+    +   '<div class="dash-wordmark">'+esc(tab.wordmark)+'</div>'
+    +   '<div class="dash-sub">Workshop Staff Satisfaction \u2014 Top Management Summary</div>'
+    + '</div>'
+    + '<div class="dash-meta">'
+    +   plural(records.length, 'response')+' &nbsp;\u00b7&nbsp; '+plural(Object.keys(dealers).length, 'dealer')
+    +   ' &nbsp;\u00b7&nbsp; '+plural(Object.keys(regions).length, 'region')
+    +   '<small>Pro Biking Workshop Staff Satisfaction Survey \u2014 '+esc(stamp)+'</small>'
+    + '</div>';
+  sheet.appendChild(head);
+
+  /* ----- headline KPIs ----- */
+  const overall   = topBox(records, "q5");
+  const retention = topBox(records, "q27");
+  const respect   = topBox(records, "q16");
+
+  const driverVals = DRIVERS.map(function(d){
+    return { label:d.label, id:d.id, val:topBox(records, d.id) };
+  }).filter(function(d){ return d.val !== null; });
+
+  const ranked = driverVals.slice().sort(function(a,b){ return a.val - b.val; });
+  const weakest = ranked.length ? ranked[0] : null;
+
+  const kpis = document.createElement("div");
+  kpis.className = "kpi-grid";
+  kpis.innerHTML =
+      '<div class="kpi-box"><div class="v">'+fmtPct(overall)+'</div>'
+    +   '<div class="k">Overall Job Satisfaction<br>(Top-2-Box)</div></div>'
+    + '<div class="kpi-box"><div class="v">'+fmtPct(retention)+'</div>'
+    +   '<div class="k">Retention Positive<br>(likely to continue)</div></div>'
+    + '<div class="kpi-box warn"><div class="v">'+(weakest ? fmtPct(weakest.val) : "\u2013")+'</div>'
+    +   '<div class="k">Weakest Driver: '+esc(weakest ? weakest.label : "\u2013")+'<br>(Top-2-Box)</div></div>'
+    + '<div class="kpi-box"><div class="v">'+fmtPct(respect)+'</div>'
+    +   '<div class="k">Treated with Respect<br>(Always/Usually)</div></div>';
+  sheet.appendChild(kpis);
+
+  /* ----- three-column body ----- */
+  const cols = document.createElement("div");
+  cols.className = "dash-cols";
+  sheet.appendChild(cols);
+
+  /* column 1 - regional stratification */
+  const c1 = document.createElement("div");
+  const regionRows = Object.keys(regions).map(function(reg){
+    const rs = records.filter(function(r){ return r.region === reg; });
+    const dl = {};
+    rs.forEach(function(r){ if(r.dealer) dl[r.dealer] = true; });
+    return { region:reg, n:rs.length, dealers:Object.keys(dl).length, sat:topBox(rs, "q5") };
+  }).sort(function(a,b){ return b.n - a.n; });
+
+  let tbody = "";
+  regionRows.forEach(function(r){
+    const cls = r.sat === null ? "num" : (r.sat >= 80 ? "good" : (r.sat >= 70 ? "mid" : "bad"));
+    tbody += '<tr><td>'+esc(r.region)+'</td><td class="num">'+fmtN(r.n)+'</td>'
+           + '<td class="num">'+fmtN(r.dealers)+'</td>'
+           + '<td class="'+cls+'">'+fmtPct(r.sat)+'</td></tr>';
+  });
+  c1.innerHTML = '<h4 class="dash-sec-title">Regional Stratification</h4>'
+    + '<table class="rt"><thead><tr><th>Region</th><th>Resp.</th><th>Dlrs</th><th>Job Sat.</th></tr></thead>'
+    + '<tbody>'+tbody+'</tbody></table>';
+
+  if(regionRows.length > 1){
+    const worst = regionRows.slice().sort(function(a,b){ return (a.sat||0) - (b.sat||0); })[0];
+    const best  = regionRows.slice().sort(function(a,b){ return (b.sat||0) - (a.sat||0); })[0];
+    const note = document.createElement("p");
+    note.className = "rt-note";
+    note.textContent = worst.region + " trails on Job Satisfaction (" + fmtPct(worst.sat)
+      + ") across " + plural(worst.dealers, "dealer")
+      + "; " + best.region + " leads at " + fmtPct(best.sat) + ".";
+    c1.appendChild(note);
+  }
+  cols.appendChild(c1);
+
+  /* column 2 - satisfaction by driver */
+  const c2 = document.createElement("div");
+  const t2 = document.createElement("h4");
+  t2.className = "dash-sec-title";
+  t2.innerHTML = 'Satisfaction by Driver <span class="sec-note">(Top-2-Box %)</span>';
+  c2.appendChild(t2);
+
+  const drv = document.createElement("div");
+  drv.className = "drv";
+  const weakSet = {};
+  ranked.slice(0, 2).forEach(function(d){ weakSet[d.id] = true; });
+  ranked.forEach(function(d){
+    const colr = weakSet[d.id] ? "#C0392B" : "var(--accent)";
+    drv.innerHTML += '<div class="dl">'+esc(d.label)+'</div>'
+      + '<div class="dtrack"><div class="dfill" style="width:'+d.val.toFixed(1)+'%;background:'+colr+'"></div>'
+      + '<span class="dv">'+Math.round(d.val)+'%</span></div>';
+  });
+  c2.appendChild(drv);
+  cols.appendChild(c2);
+
+  /* column 3 - retention intent + top reasons */
+  const c3 = document.createElement("div");
+  const retDef = fieldDef("q27");
+  const retScale = retDef && retDef.scale ? retDef.scale : [];
+  let retBase = 0;
+  const retCounts = {};
+  retScale.forEach(function(s){ retCounts[s] = 0; });
+  records.forEach(function(r){
+    if(r.q27 && retCounts.hasOwnProperty(r.q27)){ retCounts[r.q27]++; retBase++; }
+  });
+
+  const t3 = document.createElement("h4");
+  t3.className = "dash-sec-title";
+  t3.textContent = "Retention Intent";
+  c3.appendChild(t3);
+
+  if(retBase){
+    const segs = retScale.map(function(s){
+      return { label:s, frac:retCounts[s]/retBase, pct:retCounts[s]/retBase*100,
+               color:RETENTION_COLORS[s] || "#999" };
     });
-  });
-  const avg = arr => arr.length ? arr.reduce((a,b)=>a+b,0)/arr.length : null;
-  const overallIdx = avg(allScores);
-  const overallPct = overallIdx!==null ? Math.round(overallIdx/5*100) : null;
-
-  // retention risk (q27) and recommend (q29)
-  const retentionRisk = records.filter(r=>r.q27==="Probably leave"||r.q27==="Definitely leave").length;
-  // q29 (recommend) is not asked in this version, so no "would recommend" KPI.
-
-  const card1 = document.createElement("div");
-  card1.className = "kpi-row";
-  card1.innerHTML = `
-    <div class="kpi"><div class="num">${records.length}</div><div class="lbl">Responses</div></div>
-    <div class="kpi"><div class="num">${overallPct!==null?overallPct+"%":"\u2013"}</div><div class="lbl">Staff Satisfaction Index</div></div>
-    <div class="kpi"><div class="num">${Math.round(retentionRisk/records.length*100)}%</div><div class="lbl">Flight-risk (likely to leave)</div></div>
-  `;
-  wrap.appendChild(card1);
-
-  const card2 = document.createElement("div");
-  card2.className = "card";
-  card2.style.marginBottom = "14px";
-  const h3 = document.createElement("h3");
-  h3.className = "step-title";
-  h3.style.fontSize = "16px";
-  h3.textContent = "Index by category";
-  card2.appendChild(h3);
-  CATEGORIES.forEach(c=>{
-    const a = avg(catScores[c]);
-    const pct = a!==null ? Math.round(a/5*100) : 0;
-    const row = document.createElement("div");
-    row.className = "bar-row";
-    row.innerHTML = `<div class="bhead"><span>${c}</span><span>${a!==null?pct+"%":"no data"}</span></div>
-      <div class="bar-track"><div class="bar-fill" style="width:${pct}%"></div></div>`;
-    card2.appendChild(row);
-  });
-  wrap.appendChild(card2);
-
-  // top factors
-  const factorCounts = {};
-  FACTORS.forEach(f=>factorCounts[f]=0);
-  records.forEach(r=>{
-    // a single-choice answer comes back from the sheet as a plain string, not an array
-    const picked = Array.isArray(r.q26) ? r.q26 : (r.q26 ? [r.q26] : []);
-    picked.forEach(f=>{ factorCounts[f] = (factorCounts[f]||0)+1; });
-  });
-  const topFactors = Object.entries(factorCounts).filter(([,c])=>c>0).sort((a,b)=>b[1]-a[1]).slice(0,8);
-  if(topFactors.length){
-    const card3 = document.createElement("div");
-    card3.className = "card";
-    card3.style.marginBottom = "14px";
-    const h4 = document.createElement("h3");
-    h4.className = "step-title";
-    h4.style.fontSize = "16px";
-    h4.textContent = "Top factors affecting satisfaction";
-    card3.appendChild(h4);
-    topFactors.forEach(([f,c])=>{
-      const row = document.createElement("div");
-      row.className = "factor-row";
-      row.innerHTML = `<span>${f}</span><span>${c} mention${c>1?"s":""}</span>`;
-      card3.appendChild(row);
+    let legend = "";
+    segs.forEach(function(s){
+      if(!s.pct) return;
+      legend += '<div><i style="background:'+s.color+'"></i>'+esc(s.label)+' ('+s.pct.toFixed(1)+'%)</div>';
     });
-    wrap.appendChild(card3);
+    const ret = document.createElement("div");
+    ret.className = "ret-wrap";
+    ret.innerHTML = donutSVG(segs) + '<div class="legend">'+legend+'</div>';
+    c3.appendChild(ret);
+  } else {
+    const p = document.createElement("p");
+    p.className = "sd-empty";
+    p.textContent = "No retention data for this selection.";
+    c3.appendChild(p);
   }
 
-  // region breakdown
-  const regionGroups = {};
-  records.forEach(r=>{
-    const reg = r.region || "Unspecified";
-    if(!regionGroups[reg]) regionGroups[reg] = [];
+  const factorCounts = {};
+  let factorBase = 0;
+  records.forEach(function(r){
+    const picked = Array.isArray(r.q26) ? r.q26 : (r.q26 ? [r.q26] : []);
+    if(picked.length) factorBase++;
+    picked.forEach(function(f){ factorCounts[f] = (factorCounts[f] || 0) + 1; });
   });
-  STEPS.forEach(step=>{
-    step.fields.forEach(f=>{
-      if(f.type==="scale" && f.cat){
-        records.forEach(rec=>{
-          const val = rec[f.id];
-          if(val){
-            const s = scaleScore(f.scale, val);
-            if(s!==null){
-              const reg = rec.region || "Unspecified";
-              regionGroups[reg].push(s);
-            }
-          }
-        });
-      }
-    });
-  });
-  const regionEntries = Object.entries(regionGroups).filter(([,arr])=>arr.length);
-  if(regionEntries.length){
-    const card4 = document.createElement("div");
-    card4.className = "card";
-    card4.style.marginBottom = "14px";
-    const h5 = document.createElement("h3");
-    h5.className = "step-title";
-    h5.style.fontSize = "16px";
-    h5.textContent = "Index by region";
-    card4.appendChild(h5);
-    regionEntries.sort((a,b)=>avg(b[1])-avg(a[1])).forEach(([reg,arr])=>{
-      const pct = Math.round(avg(arr)/5*100);
+  const topFactors = Object.keys(factorCounts)
+    .map(function(k){ return [k, factorCounts[k]]; })
+    .sort(function(a,b){ return b[1] - a[1]; })
+    .slice(0, 5);
+
+  if(topFactors.length){
+    const t4 = document.createElement("h4");
+    t4.className = "dash-sec-title tight";
+    t4.textContent = "Top Reasons Affecting Satisfaction";
+    c3.appendChild(t4);
+    topFactors.forEach(function(f, i){
       const row = document.createElement("div");
-      row.className = "bar-row";
-      row.innerHTML = `<div class="bhead"><span>${reg}</span><span>${pct}%</span></div>
-        <div class="bar-track"><div class="bar-fill" style="width:${pct}%"></div></div>`;
-      card4.appendChild(row);
+      row.className = "reason-row";
+      row.innerHTML = '<span>'+(i+1)+'. '+esc(f[0])+'</span>'
+                    + '<b>'+(f[1]/factorBase*100).toFixed(1)+'%</b>';
+      c3.appendChild(row);
     });
-    wrap.appendChild(card4);
+    const fn = document.createElement("p");
+    fn.className = "sd-foot";
+    fn.textContent = "(% of " + plural(factorBase, "respondent") + " citing a factor; multi-select)";
+    c3.appendChild(fn);
+  }
+  cols.appendChild(c3);
+
+  /* ----- salary distribution by age / qualification / role ----- */
+  const salSheet = document.createElement("div");
+  salSheet.className = "dash-sheet";
+  const st = document.createElement("h4");
+  st.className = "dash-sec-title";
+  st.innerHTML = 'Salary Distribution <span class="sec-note">(by Age, Qualification and Role)</span>';
+  salSheet.appendChild(st);
+
+  const bands = fieldOptions("salary");
+  const salLegend = document.createElement("div");
+  salLegend.className = "legend legend-row";
+  salLegend.innerHTML = bands.map(function(b, i){
+    return '<div><i style="background:'+ramp[i % ramp.length]+'"></i>'+esc(b)+'</div>';
+  }).join("");
+  salSheet.appendChild(salLegend);
+
+  const salCols = document.createElement("div");
+  salCols.className = "dash-cols";
+  salCols.appendChild(salaryBlock(records, "age",           "By Age",           ramp));
+  salCols.appendChild(salaryBlock(records, "qualification", "By Qualification", ramp));
+  salCols.appendChild(salaryBlock(records, "designation",   "By Role",          ramp));
+  salSheet.appendChild(salCols);
+  wrap.appendChild(salSheet);
+
+  /* ----- optional: key takeaway ----- */
+  if(dashOptions.takeaway && ranked.length){
+    const w1 = ranked[0], w2 = ranked[1];
+    const worstRegion = regionRows.slice().sort(function(a,b){ return (a.sat||0) - (b.sat||0); })[0];
+    const strong = ranked.slice(-2).map(function(d){ return d.label; }).reverse();
+
+    let txt = w1.label + " (" + fmtPct(w1.val) + ")";
+    if(w2) txt += " and " + w2.label + " (" + fmtPct(w2.val) + ")";
+    txt += (w2 ? " are" : " is") + " the clear satisfaction gap" + (w2 ? "s" : "") + ".";
+    if(topFactors.length){
+      txt += " " + topFactors[0][0] + " is the most cited factor, raised by "
+           + (topFactors[0][1]/factorBase*100).toFixed(1) + "% of respondents.";
+    }
+    if(regionRows.length > 1 && worstRegion){
+      txt += " " + worstRegion.region + " (" + fmtPct(worstRegion.sat) + " Job Sat. across "
+           + plural(worstRegion.dealers, "dealer") + ") needs targeted intervention.";
+    }
+    if(strong.length) txt += " " + strong.join(" and ") + " are network strengths.";
+
+    const tk = document.createElement("div");
+    tk.className = "takeaway";
+    tk.innerHTML = '<b>KEY TAKEAWAY:</b> ' + esc(txt);
+    wrap.appendChild(tk);
+  }
+
+  /* ----- optional: open comments ----- */
+  if(dashOptions.comments){
+    const notes = records.filter(function(r){ return r.q30 && String(r.q30).trim(); });
+    const cm = document.createElement("div");
+    cm.className = "dash-sheet";
+    const ct = document.createElement("h4");
+    ct.className = "dash-sec-title";
+    ct.textContent = "Open Comments (" + fmtN(notes.length) + ")";
+    cm.appendChild(ct);
+    if(!notes.length){
+      const p = document.createElement("p");
+      p.className = "sd-empty";
+      p.textContent = "No written comments in this selection.";
+      cm.appendChild(p);
+    } else {
+      notes.slice(0, 200).forEach(function(r){
+        const q = document.createElement("div");
+        q.className = "cmt";
+        q.innerHTML = '<p>'+esc(String(r.q30).trim())+'</p>'
+          + '<span>'+esc(r.designation || "\u2013")+' \u00b7 '+esc(r.dealer || "\u2013")+'</span>';
+        cm.appendChild(q);
+      });
+      if(notes.length > 200){
+        const more = document.createElement("p");
+        more.className = "sd-foot";
+        more.textContent = "Showing first 200 of " + fmtN(notes.length) + " comments \u2014 export the CSV for the full set.";
+        cm.appendChild(more);
+      }
+    }
+    wrap.appendChild(cm);
   }
 
   const actions = document.createElement("div");
@@ -2843,7 +3227,7 @@ function drawDashboard(wrap){
   const exportBtn = document.createElement("button");
   exportBtn.className = "btn";
   exportBtn.textContent = "Export responses (CSV)";
-  exportBtn.onclick = ()=>exportCSV(records);
+  exportBtn.onclick = function(){ exportCSV(records); };
   actions.appendChild(exportBtn);
   wrap.appendChild(actions);
 }
